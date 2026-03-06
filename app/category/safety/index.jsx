@@ -1,0 +1,107 @@
+import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import policeData from "../../data/policeData.json";
+
+const emergencyServices = [
+  { id: "1", title: "Police", number: "100", emoji: "🚓", desc: "Report crime or danger", color: "#e53935" },
+  { id: "2", title: "Ambulance", number: "108", emoji: "🚑", desc: "Medical emergency", color: "#d32f2f" },
+  { id: "3", title: "Fire Brigade", number: "101", emoji: "🚒", desc: "Fire & rescue", color: "#f57c00" },
+  { id: "4", title: "Women Helpline", number: "181", emoji: "🛡️", desc: "Support & safety", color: "#7b1fa2" },
+  { id: "5", title: "Child Helpline", number: "1098", emoji: "🛡️", desc: "Support & safety", color: "#a40b69ff" },
+];
+
+export default function SafetyPage() {
+  const [showPolice, setShowPolice] = useState(false);
+
+  const policeStations = (policeData.police || []).map((item, index) => ({
+    id: item.id || `police_${index}`,
+    name: item.name || item["name:en"] || "Police Station",
+    info: item["addr:street"] || item["addr:city"] || "Jaipur",
+  }));
+
+ 
+  const makeCall = (number) => {
+    Linking.openURL(`tel:${number}`);
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#fafafa]">
+      <ScrollView showsVerticalScrollIndicator={false}>
+
+        <View className="p-6">
+          <Text className="text-3xl font-bold text-gray-800">
+            Safety & Emergency
+          </Text>
+          <Text className="text-sm text-gray-600 mt-1">
+            Immediate help when it matters most
+          </Text>
+        </View>
+
+        <View className="px-4">
+
+
+          {emergencyServices.map(item => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.85}
+              onPress={() => makeCall(item.number)}   
+              className="flex-row items-center bg-white p-4 rounded-2xl mb-4 shadow"
+              style={{ borderLeftColor: item.color, borderLeftWidth: 6 }}
+            >
+              <Text className="text-4xl mr-4">{item.emoji}</Text>
+
+              <View className="flex-1">
+                <Text className="text-lg font-bold">{item.title}</Text>
+                <Text className="text-sm text-gray-500 mt-1">
+                  {item.desc}
+                </Text>
+              </View>
+
+              <View className="items-center">
+                <Text
+                  className="text-xl font-bold"
+                  style={{ color: item.color }}
+                >
+                  {item.number}
+                </Text>
+                <Text className="text-xs font-bold text-gray-700 mt-1">
+                  CALL
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+
+          
+          
+          <TouchableOpacity
+            onPress={() => setShowPolice(prev => !prev)}
+            className="h-20 rounded-2xl bg-orange-300 justify-center items-center mt-4 mb-6 px-4"
+          >
+            <Text className="text-xl font-semibold text-red-800 text-center">
+              🚨 Nearby Police Stations
+            </Text>
+          </TouchableOpacity>
+
+          
+          {showPolice && (
+            <View className="mb-10">
+              {policeStations.map(item => (
+                <View
+                  key={item.id}
+                  className="bg-orange-100 p-4 rounded-2xl mb-3 shadow"
+                >
+                  <Text className="text-lg font-semibold">{item.name}</Text>
+                  <Text className="text-sm text-gray-500 mt-1">
+                    {item.info}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
