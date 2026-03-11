@@ -1,0 +1,238 @@
+[
+  {
+    "name": "The Door'S Restaurant",
+    "address": "The Door's Restaurant, Bhagwandas Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9157551,
+    "longitude": 75.8101207,
+    "distance_m": 435,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "The Doors Restaurant",
+    "address": "the doors restaurant, WR86+73P Khandaka Mansion, Mirza Ismail Rd, near Rajmandir Cinema, Panch Batti, C Scheme, Ashok Nagar, Jaipur, Rajasthan 302001, Bhagwandas Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.91579,
+    "longitude": 75.81012,
+    "distance_m": 439,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Surya Mahal Restaurant",
+    "address": "Surya Mahal Restaurant, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9162394,
+    "longitude": 75.8112696,
+    "distance_m": 440,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "catering.restaurant.indian"
+    ]
+  },
+  {
+    "name": "Niros",
+    "address": "Niros, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9162948,
+    "longitude": 75.811478,
+    "distance_m": 441,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Natraj Vegetarian Restaurant",
+    "address": "Natraj vegetarian Restaurant, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9161855,
+    "longitude": 75.8109776,
+    "distance_m": 443,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "vegetarian",
+      "vegetarian.only"
+    ]
+  },
+  {
+    "name": "V2 Fine Dining",
+    "address": "V2 Fine Dining, Ram Bilas Sarda Raod, Adarsh Nagar, Jaipur - 302004, Rajasthan, India",
+    "latitude": 26.9078828,
+    "longitude": 75.8126688,
+    "distance_m": 501,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Yo China",
+    "address": "Yo China, D-183, Mahesh Marg, D-Block, Sector 4, Malviya Nagar, Jaipur, Rajasthan 302017, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9164285,
+    "longitude": 75.8094487,
+    "distance_m": 534,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "catering.restaurant.chinese"
+    ]
+  },
+  {
+    "name": "Barbeque Nation - 1St Floor",
+    "address": "Barbeque Nation - 1st floor, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9165311,
+    "longitude": 75.8095597,
+    "distance_m": 538,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Dasaprakash",
+    "address": "dasaprakash, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9163003,
+    "longitude": 75.8080015,
+    "distance_m": 615,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "catering.restaurant.indian"
+    ]
+  },
+  {
+    "name": "Retreat",
+    "address": "Retreat, Subhash Marg, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9154952,
+    "longitude": 75.8064548,
+    "distance_m": 683,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "production",
+      "production.brewery"
+    ]
+  },
+  {
+    "name": "Thali And More",
+    "address": "Thali & more, 1st floor plot no, C 46, Sarojini Marg, Panch Batti, C Scheme, Ashok Nagar, Jaipur, Rajasthan 302001, Adarsh Nagar, Jaipur - 302004, Rajasthan, India",
+    "latitude": 26.9109569,
+    "longitude": 75.805667,
+    "distance_m": 688,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "catering.restaurant.indian"
+    ]
+  },
+  {
+    "name": "Annpoornam",
+    "address": "Annpoornam, Ashok Marg, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9148703,
+    "longitude": 75.8047591,
+    "distance_m": 807,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "catering.restaurant.indian"
+    ]
+  },
+  {
+    "name": "Mohan Restaurant",
+    "address": "Mohan Restaurant, Nehru Bazaar, Ramganj, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9174489,
+    "longitude": 75.8185448,
+    "distance_m": 828,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Mughal Rasoi Restaurant",
+    "address": "Mughal Rasoi Restaurant, Lajpat Marg, Adarsh Nagar, Jaipur - 302004, Rajasthan, India",
+    "latitude": 26.9122319,
+    "longitude": 75.8037901,
+    "distance_m": 855,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Old Kebab Shop",
+    "address": "Old Kebab Shop, 151, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9169628,
+    "longitude": 75.8053859,
+    "distance_m": 861,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Sweet Dreams Hotel Rooftop Restaurant",
+    "address": "Sweet Dreams Hotel Rooftop Restaurant, Nehru Bazaar, Ramganj, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9170942,
+    "longitude": 75.8200153,
+    "distance_m": 918,
+    "categories": [
+      "accommodation",
+      "accommodation.hotel",
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Ganesh Restaurant",
+    "address": "Ganesh Restaurant, Nehru Bazaar, Ramganj, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9168711,
+    "longitude": 75.8201955,
+    "distance_m": 919,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Green Restaurant Pure Vegetarian",
+    "address": "Green Restaurant Pure Vegetarian, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9170712,
+    "longitude": 75.8047235,
+    "distance_m": 922,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "vegetarian",
+      "vegetarian.only"
+    ]
+  },
+  {
+    "name": "Old Green Tandori Dhaba",
+    "address": "Old Green Tandori Dhaba, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9173942,
+    "longitude": 75.8046009,
+    "distance_m": 952,
+    "categories": [
+      "catering",
+      "catering.restaurant"
+    ]
+  },
+  {
+    "name": "Copper Chimney",
+    "address": "Copper Chimney, Mirza Ismail Road, Jaipur - 302001, Rajasthan, India",
+    "latitude": 26.9169731,
+    "longitude": 75.80407,
+    "distance_m": 970,
+    "categories": [
+      "catering",
+      "catering.restaurant",
+      "catering.restaurant.asian",
+      "catering.restaurant.indian",
+      "vegetarian"
+    ]
+  }
+]
