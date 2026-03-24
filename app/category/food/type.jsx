@@ -11,7 +11,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 
-const API_URL = "http://10.209.84.138:8000/nearby-restaurants";
+const API_URL = "http://10.108.85.250:8000/nearby-restaurants";
 
 const getRandomRating = () =>
   +(Math.random() * (5 - 1) + 1).toFixed(1);
