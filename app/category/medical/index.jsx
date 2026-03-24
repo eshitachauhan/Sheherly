@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { useRouter } from "expo-router";
@@ -31,15 +31,22 @@ export default function MedicalServicesPage() {
         </Text>
       </View>
 
-
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="px-4">
           {filteredData.map(item => (
             <TouchableOpacity
               key={item.id}
               activeOpacity={0.85}
-              onPress={() => router.push(`/category/medical/${item.slug}`)}
-              className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
+              onPress={() => {
+                if (item.slug === "ambulance") {
+                  Linking.openURL("tel:108");
+                } else {
+                  router.push(`/category/medical/${item.slug}`);
+                }
+              }}
+              className={`flex-row items-center p-4 rounded-2xl mb-3 shadow ${
+                item.slug === "ambulance" ? "bg-red-100" : "bg-white"
+              }`}
             >
               <Text className="text-4xl mr-4">{item.emoji}</Text>
 
@@ -48,7 +55,11 @@ export default function MedicalServicesPage() {
                 <Text className="text-sm text-gray-500 mt-1">{item.desc}</Text>
               </View>
 
-              <Text className="text-xl text-gray-400">›</Text>
+              {item.slug === "ambulance" ? (
+                <Text className="text-lg font-bold text-red-600">108</Text>
+              ) : (
+                <Text className="text-xl text-gray-400">›</Text>
+              )}
             </TouchableOpacity>
           ))}
 
@@ -62,5 +73,4 @@ export default function MedicalServicesPage() {
     </SafeAreaView>
   );
 }
-
 
