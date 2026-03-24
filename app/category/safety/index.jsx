@@ -18,9 +18,11 @@ export default function SafetyPage() {
     id: item.id || `police_${index}`,
     name: item.name || item["name:en"] || "Police Station",
     info: item["addr:street"] || item["addr:city"] || "Jaipur",
+    lat: item.lat,
+    lng: item.lng
   }));
 
- 
+
   const makeCall = (number) => {
     Linking.openURL(`tel:${number}`);
   };
@@ -45,7 +47,7 @@ export default function SafetyPage() {
             <TouchableOpacity
               key={item.id}
               activeOpacity={0.85}
-              onPress={() => makeCall(item.number)}   
+              onPress={() => makeCall(item.number)}
               className="flex-row items-center bg-white p-4 rounded-2xl mb-4 shadow"
               style={{ borderLeftColor: item.color, borderLeftWidth: 6 }}
             >
@@ -72,8 +74,8 @@ export default function SafetyPage() {
             </TouchableOpacity>
           ))}
 
-          
-          
+
+
           <TouchableOpacity
             onPress={() => setShowPolice(prev => !prev)}
             className="h-20 rounded-2xl bg-orange-300 justify-center items-center mt-4 mb-6 px-4"
@@ -83,7 +85,7 @@ export default function SafetyPage() {
             </Text>
           </TouchableOpacity>
 
-          
+
           {showPolice && (
             <View className="mb-10">
               {policeStations.map(item => (
@@ -92,9 +94,24 @@ export default function SafetyPage() {
                   className="bg-orange-100 p-4 rounded-2xl mb-3 shadow"
                 >
                   <Text className="text-lg font-semibold">{item.name}</Text>
+
                   <Text className="text-sm text-gray-500 mt-1">
-                    {item.info}
+                    📍 {item.info}
                   </Text>
+
+                  {/* Directions */}
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`
+                      )
+                    }
+                    className="mt-3 bg-red-500 px-3 py-2 rounded-lg"
+                  >
+                    <Text className="text-white text-center text-sm">
+                      Get Directions
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               ))}
             </View>
