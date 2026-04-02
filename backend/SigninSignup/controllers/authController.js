@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-/*SIGNUP*/
+/* ================= SIGNUP ================= */
 export const signup = async (req, res) => {
   const { email, password } = req.body;
 
@@ -10,7 +10,6 @@ export const signup = async (req, res) => {
   console.log("Email:", email);
 
   try {
-    
     const existingUser = await User.findOne({ email });
     console.log("Existing user:", existingUser);
 
@@ -18,44 +17,42 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log("Password hashed");
 
-    
     const user = await User.create({
       email,
       password: hashedPassword,
+      role: "user", // ✅ default role
     });
 
     console.log("User created:", user._id);
 
-    
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       token,
       user: {
         id: user._id,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
     console.error("SIGNUP ERROR:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Signup failed",
-      error: error.message,
     });
   }
 };
 
-/*SIGNIN*/
+/* ================= SIGNIN ================= */
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -83,23 +80,27 @@ export const signin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.status(200).json({
+    // ✅ IMPORTANT FIX: send proper user object
+    return res.status(200).json({
       success: true,
       token,
       user: {
         id: user._id,
         email: user.email,
+        role: user.role,
       },
     });
+
   } catch (error) {
     console.error("SIGNIN ERROR:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Signin failed",
     });
   }
 };
 
+/* ================= CHANGE PASSWORD ================= */
 export const changePassword = async (req, res) => {
   try {
     console.log("CHANGE PASSWORD HIT");
@@ -132,6 +133,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
+/* ================= DELETE ACCOUNT ================= */
 export const deleteAccount = async (req, res) => {
   try {
     console.log("DELETE USER ID:", req.userId);
@@ -144,13 +146,13 @@ export const deleteAccount = async (req, res) => {
 
     await User.findByIdAndDelete(req.userId);
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Account deleted successfully",
     });
   } catch (error) {
     console.error("DELETE ACCOUNT ERROR:", error);
-    res.status(500).json({ message: "Failed to delete account" });
+    return res.status(500).json({ message: "Failed to delete account" });
   }
 };
 

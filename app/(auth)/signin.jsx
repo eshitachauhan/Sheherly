@@ -11,37 +11,47 @@ import * as SecureStore from "expo-secure-store";
 import validationSchema from '../../utils/authSchema';
 const logo = require("../../assets/images/sheherlyTitle.png")
 
-const BASE_URL = "http://10.231.186.139:8000"; 
+const BASE_URL = "http://10.231.186.250:8000"; 
 
 const Signin = () => {
   const router = useRouter();
   
   const handleSignin = async (values) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/signin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
+    console.log("FULL RESPONSE:", data); // ✅ DEBUG
 
-      if (!res.ok) {
-        Alert.alert("Signin Failed", data.message || "Invalid credentials");
-        return;
-      }
-
-      await AsyncStorage.setItem("token", data.token);
-
-      console.log("SIGNIN SUCCESS:", data);
-      await SecureStore.setItemAsync("token", data.token);
-
-      router.replace("/home"); 
-    } catch (err) {
-      console.log(err);
-      Alert.alert("Error", "Server not reachable");
+    if (!res.ok) {
+      Alert.alert("Signin Failed", data.message || "Invalid credentials");
+      return;
     }
-  };
+
+    await AsyncStorage.setItem("token", data.token);
+    await SecureStore.setItemAsync("token", data.token);
+
+    if (data.user) {
+      await AsyncStorage.setItem("user", JSON.stringify(data.user));
+
+      if (data.user.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else {
+        router.replace("/home");
+      }
+    } else {
+      router.replace("/home");
+    }
+
+  } catch (err) {
+    console.log("SIGNIN ERROR:", err);
+    Alert.alert("Error", "Server not reachable");
+  }
+};
 
   return (
     <SafeAreaView className={`bg-[white]`}>
