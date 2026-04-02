@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import polyline from "@mapbox/polyline";
 
-const BASE_URL = "https://leonard-procommutation-criticisingly.ngrok-free.dev";
+const BASE_URL = "https://superobjectionable-unalliterative-ligia.ngrok-free.dev";
 
 export default function Map() {
   const mapRef = useRef(null);
@@ -18,21 +18,31 @@ export default function Map() {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") { 
-        console.log("Location permission denied");
-        return;
-      }
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Location permission denied");
+          Alert.alert("Permission Denied", "Location permission is required.");
+          return;
+        }
 
-      const loc = await Location.getCurrentPositionAsync({});
-      setUserLocation({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-      });
+        const loc = await Location.getCurrentPositionAsync({});
+        setUserLocation({
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        });
+      } catch (err) {
+        console.log("LOCATION ERROR:", err);
+      }
     })();
   }, []);
 
   const searchPlace = async () => {
+    if (!search.trim()) {
+      Alert.alert("Enter a place", "Please type a location to search.");
+      return;
+    }
+
     try {
       setRouteCoords([]);
       setDistance(null);
@@ -42,8 +52,25 @@ export default function Map() {
         `${BASE_URL}/api/search?place=${encodeURIComponent(search)}`
       );
 
-      const data = await res.json();
-      if (!data.success) return;
+      const text = await res.text();
+      console.log("SEARCH RAW RESPONSE:", text);
+
+      if (!res.ok) {
+        throw new Error(`Search failed with status ${res.status}`);
+      }
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (jsonErr) {
+        console.log("SEARCH JSON PARSE ERROR:", jsonErr);
+        throw new Error("Backend did not return valid JSON for search");
+      }
+
+      if (!data.success || !data.data) {
+        Alert.alert("Not found", "Could not find that place.");
+        return;
+      }
 
       const place = {
         latitude: data.data.latitude,
@@ -62,11 +89,15 @@ export default function Map() {
       );
     } catch (err) {
       console.log("SEARCH ERROR:", err);
+      Alert.alert("Search Error", err.message);
     }
   };
 
   const findRoute = async () => {
-    if (!userLocation || !destination) return;
+    if (!userLocation || !destination) {
+      Alert.alert("Missing location", "Search a destination first.");
+      return;
+    }
 
     try {
       const res = await fetch(`${BASE_URL}/api/route`, {
@@ -79,8 +110,25 @@ export default function Map() {
         }),
       });
 
-      const data = await res.json();
-      if (!data.success) return;
+      const text = await res.text();
+      console.log("ROUTE RAW RESPONSE:", text);
+
+      if (!res.ok) {
+        throw new Error(`Route failed with status ${res.status}`);
+      }
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (jsonErr) {
+        console.log("ROUTE JSON PARSE ERROR:", jsonErr);
+        throw new Error("Backend did not return valid JSON for route");
+      }
+
+      if (!data.success || !data.data?.polyline) {
+        Alert.alert("Route Error", "Could not get route.");
+        return;
+      }
 
       setDistance(data.data.distance);
       setDuration(data.data.duration);
@@ -93,6 +141,7 @@ export default function Map() {
       setRouteCoords(decoded);
     } catch (err) {
       console.log("ROUTE ERROR:", err);
+      Alert.alert("Route Error", err.message);
     }
   };
 
@@ -102,7 +151,6 @@ export default function Map() {
 
   return (
     <View className="flex-1">
-      
       <View className="absolute top-6 left-3 right-3 z-10 bg-white p-3 rounded-xl shadow-lg">
         <TextInput
           placeholder="Search place"
@@ -128,11 +176,10 @@ export default function Map() {
         </TouchableOpacity>
       </View>
 
-     
       <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
-        style={{ flex: 1 }}          
+        style={{ flex: 1 }}
         initialRegion={{
           ...userLocation,
           latitudeDelta: 0.05,
@@ -140,7 +187,7 @@ export default function Map() {
         }}
         showsUserLocation
         zoomControlEnabled
-        showsCompass={false}          
+        showsCompass={false}
         showsMyLocationButton={false}
       >
         {destination && <Marker coordinate={destination} />}
@@ -155,28 +202,15 @@ export default function Map() {
       </MapView>
 
       {distance && duration && (
-        <View className="absolute bottom-10 left-3 right-15 bg-black/45 p-4 rounded-xl">
+        <View className="absolute bottom-10 left-3 right-3 bg-black/45 p-4 rounded-xl">
           <Text className="text-white text-center">
             Distance: {(distance / 1000).toFixed(1)} km
           </Text>
           <Text className="text-white text-center mt-1">
-            Time-by car: {(duration / 60).toFixed(0)} mins
+            Time by car: {(duration / 60).toFixed(0)} mins
           </Text>
         </View>
       )}
     </View>
   );
 }
-
- 
-
-
-
-
-
-
-
-
-
-
-

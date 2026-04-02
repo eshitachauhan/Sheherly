@@ -1,9 +1,4 @@
 import fetch from "node-fetch";
-import https from "https";
-
-const agent = new https.Agent({
-  rejectUnauthorized: false, 
-});
 
 export const searchPlace = async (place) => {
   try {
@@ -12,11 +7,16 @@ export const searchPlace = async (place) => {
     )}`;
 
     const res = await fetch(url, {
-      agent,
       headers: {
         "User-Agent": "Sheherly-App/1.0",
       },
     });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.log("NOMINATIM ERROR:", text);
+      return { success: false, error: "Search API error" };
+    }
 
     const data = await res.json();
 
@@ -33,7 +33,7 @@ export const searchPlace = async (place) => {
       },
     };
   } catch (err) {
-    console.error("GEOCODING ERROR", err);
+    console.error("GEOCODING ERROR:", err);
     return { success: false, error: "Geocoding failed" };
   }
 };

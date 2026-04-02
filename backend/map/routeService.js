@@ -1,16 +1,9 @@
-
 import fetch from "node-fetch";
-import https from "https";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const agent = new https.Agent({
-  rejectUnauthorized: false, 
-});
-
 const ORS_API_KEY = process.env.ORS_API_KEY;
-console.log("ORS KEY:", ORS_API_KEY);
 
 const MODE_MAP = {
   car: "driving-car",
@@ -33,7 +26,6 @@ export async function getRoute(source, destination, mode = "car") {
       `https://api.openrouteservice.org/v2/directions/${orsProfile}`,
       {
         method: "POST",
-        agent, 
         headers: {
           Authorization: ORS_API_KEY,
           "Content-Type": "application/json",
@@ -51,7 +43,12 @@ export async function getRoute(source, destination, mode = "car") {
 
     const data = await response.json();
 
+    if (!data.routes || data.routes.length === 0) {
+      return { success: false, error: "No route found" };
+    }
+
     const route = data.routes[0];
+
     return {
       success: true,
       data: {
@@ -61,7 +58,7 @@ export async function getRoute(source, destination, mode = "car") {
       },
     };
   } catch (error) {
-    console.error("ROUTE ERROR", error);
-    return { success: false, error: "fetch failed" };
+    console.error("ROUTE ERROR:", error);
+    return { success: false, error: "Route fetch failed" };
   }
 }
