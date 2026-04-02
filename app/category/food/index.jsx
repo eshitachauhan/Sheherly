@@ -1,99 +1,94 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
 import { useRouter } from "expo-router";
 
-export default function FoodIndex() {
+const foodOptions = [
+  {
+    id: "1",
+    name: "Restaurants",
+    slug: "restaurants",
+    emoji: "🍽️",
+    desc: "Dine-in & family places",
+  },
+  {
+    id: "2",
+    name: "Street Food",
+    slug: "street-food",
+    emoji: "🌮",
+    desc: "Quick bites & local flavors",
+  },
+  {
+    id: "3",
+    name: "Chill Cafes",
+    slug: "chill-cafes",
+    emoji: "☕",
+    desc: "Coffee & conversations",
+  },
+  {
+    id: "4",
+    name: "Night Cafes",
+    slug: "night-cafes",
+    emoji: "🍔",
+    desc: "Late-night cravings",
+  },
+];
+
+export default function FoodPage() {
+  const [search, setSearch] = useState("");
   const router = useRouter();
+
+  const filteredData = foodOptions.filter(item =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f5f9]">
-      
+
       <View className="p-6">
-        <Text className="text-3xl font-bold text-gray-800">Food & Dining</Text>
+        <Text className="text-3xl font-bold text-gray-800">
+          Food & Dining
+        </Text>
         <Text className="text-sm text-gray-600 mt-1">
           Find good food around you
         </Text>
       </View>
 
-      
-      <View className="px-4">
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() =>
-            router.push("/category/food/type?category=restaurants")
-          }
-          className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
-        >
-          <Text className="text-4xl mr-4">🍽️</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="px-4">
 
-          <View className="flex-1">
-            <Text className="text-lg font-semibold">Nearby Restaurants</Text>
-            <Text className="text-sm text-gray-500 mt-1">
-              Dine-in & family places
+          {filteredData.map(item => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.85}
+              onPress={() =>
+                router.push(`/category/food/${item.slug}`)
+              }
+              className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
+            >
+              <Text className="text-4xl mr-4">{item.emoji}</Text>
+
+              <View className="flex-1">
+                <Text className="text-lg font-semibold">
+                  {item.name}
+                </Text>
+                <Text className="text-sm text-gray-500 mt-1">
+                  {item.desc}
+                </Text>
+              </View>
+
+              <Text className="text-xl text-gray-400">›</Text>
+            </TouchableOpacity>
+          ))}
+
+          {filteredData.length === 0 && (
+            <Text className="text-center text-gray-500 mt-10">
+              No food options found 😬
             </Text>
-          </View>
+          )}
 
-          <Text className="text-xl text-gray-400">›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() =>
-            router.push("/category/food/type?category=street-food")
-          }
-          className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
-        >
-          <Text className="text-4xl mr-4">🌮</Text>
-
-          <View className="flex-1">
-            <Text className="text-lg font-semibold">Street Food</Text>
-            <Text className="text-sm text-gray-500 mt-1">
-              Quick bites & local flavors
-            </Text>
-          </View>
-
-          <Text className="text-xl text-gray-400">›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() =>
-            router.push("/category/food/type?category=chill-cafes")
-          }
-          className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
-        >
-          <Text className="text-4xl mr-4">☕</Text>
-
-          <View className="flex-1">
-            <Text className="text-lg font-semibold">Chill Cafes</Text>
-            <Text className="text-sm text-gray-500 mt-1">
-              Coffee, work & conversations
-            </Text>
-          </View>
-
-          <Text className="text-xl text-gray-400">›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() =>
-            router.push("/category/food/type?category=night-cafes")
-          }
-          className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
-        >
-          <Text className="text-4xl mr-4">🍔</Text>
-
-          <View className="flex-1">
-            <Text className="text-lg font-semibold">Open Night Cafes</Text>
-            <Text className="text-sm text-gray-500 mt-1">
-              Late-night cravings sorted
-            </Text>
-          </View>
-
-          <Text className="text-xl text-gray-400">›</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
-

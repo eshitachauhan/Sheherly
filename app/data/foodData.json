@@ -1,0 +1,286 @@
+{
+  "restaurants": [
+    {
+      "id": "r1",
+      "name": "Handi Restaurant",
+      "lat": 26.9183,
+      "lng": 75.7996,
+      "location": "MI Road",
+      "rating": 4.4,
+      "phone": "01412372376",
+      "timings": "11 AM - 11 PM"
+    },
+    {
+      "id": "r2",
+      "name": "Spice Court",
+      "lat": 26.9116,
+      "lng": 75.8055,
+      "location": "Civil Lines",
+      "rating": 4.5,
+      "phone": "01412222124",
+      "timings": "12 PM - 11 PM"
+    },
+    {
+      "id": "r3",
+      "name": "Chokhi Dhani",
+      "lat": 26.7670,
+      "lng": 75.8360,
+      "location": "Tonk Road",
+      "rating": 4.6,
+      "phone": "01415160000",
+      "timings": "5 PM - 11 PM"
+    },
+    {
+      "id": "r4",
+      "name": "Bar Palladio",
+      "lat": 26.9245,
+      "lng": 75.8260,
+      "location": "Narain Niwas Palace",
+      "rating": 4.5,
+      "phone": "09928011111",
+      "timings": "6 PM - 1 AM"
+    },
+    {
+      "id": "r5",
+      "name": "Tapri Central",
+      "lat": 26.9124,
+      "lng": 75.8072,
+      "location": "C Scheme",
+      "rating": 4.3,
+      "phone": "01414082222",
+      "timings": "7:30 AM - 10 PM"
+    },
+    {
+      "id": "r6",
+      "name": "The Rajput Room",
+      "lat": 26.9195,
+      "lng": 75.7905,
+      "location": "City Palace",
+      "rating": 4.6,
+      "phone": "01414088999",
+      "timings": "7 AM - 11 PM"
+    },
+    {
+      "id": "r7",
+      "name": "Suvarna Mahal",
+      "lat": 26.9260,
+      "lng": 75.8250,
+      "location": "Rambagh Palace",
+      "rating": 4.7,
+      "phone": "01416660000",
+      "timings": "6:30 PM - 11 PM"
+    }
+  ],
+
+  "street-food": [
+    {
+      "id": "s1",
+      "name": "Rawat Misthan Bhandar",
+      "lat": 26.9239,
+      "lng": 75.8040,
+      "location": "Sindhi Camp",
+      "rating": 4.5,
+      "timings": "8 AM - 10 PM"
+    },
+    {
+      "id": "s2",
+      "name": "Masala Chowk",
+      "lat": 26.9124,
+      "lng": 75.8190,
+      "location": "Ram Niwas Garden",
+      "rating": 4.6,
+      "timings": "8 AM - 10 PM"
+    },
+    {
+      "id": "s3",
+      "name": "Laxmi Misthan Bhandar (LMB)",
+      "lat": 26.9230,
+      "lng": 75.8267,
+      "location": "Johari Bazaar",
+      "rating": 4.4,
+      "timings": "8 AM - 11 PM"
+    },
+    {
+      "id": "s4",
+      "name": "Pandit Pav Bhaji",
+      "lat": 26.9120,
+      "lng": 75.8040,
+      "location": "C Scheme",
+      "rating": 4.3,
+      "timings": "5 PM - 11 PM"
+    },
+    {
+      "id": "s5",
+      "name": "Samrat Restaurant Kachori",
+      "lat": 26.9215,
+      "lng": 75.8000,
+      "location": "MI Road",
+      "rating": 4.2,
+      "timings": "8 AM - 9 PM"
+    },
+    {
+      "id": "s6",
+      "name": "Golgappa Stall Bapu Bazaar",
+      "lat": 26.9220,
+      "lng": 75.8280,
+      "location": "Bapu Bazaar",
+      "rating": 4.1,
+      "timings": "4 PM - 10 PM"
+    },
+    {
+      "id": "s7",
+      "name": "Sahu Chai Stall",
+      "lat": 26.9250,
+      "lng": 75.8200,
+      "location": "Chaura Rasta",
+      "rating": 4.3,
+      "timings": "6 AM - 9 PM"
+    }
+  ],
+
+  "chill-cafes": [
+    {
+      "id": "c1",
+      "name": "Cafe Lazy Mojo",
+      "lat": 26.9070,
+      "lng": 75.7900,
+      "location": "C Scheme",
+      "rating": 4.4,
+      "phone": "09828000000",
+      "timings": "10 AM - 11 PM"
+    },
+    {
+      "id": "c2",
+      "name": "Town Coffee",
+      "lat": 26.9120,
+      "lng": 75.8070,
+      "location": "C Scheme",
+      "rating": 4.5,
+      "phone": "09785000000",
+      "timings": "9 AM - 10 PM"
+    },
+    {
+      "id": "c3",
+      "name": "Nothing Before Coffee",
+      "lat": 26.8500,
+      "lng": 75.8120,
+      "location": "Malviya Nagar",
+      "rating": 4.3,
+      "phone": "09001000000",
+      "timings": "9 AM - 11 PM"
+    },
+    {
+      "id": "c4",
+      "name": "Anokhi Cafe",
+      "lat": 26.9110,
+      "lng": 75.8000,
+      "location": "C Scheme",
+      "rating": 4.6,
+      "phone": "01414001111",
+      "timings": "10 AM - 6 PM"
+    },
+    {
+      "id": "c5",
+      "name": "Tapri Central",
+      "lat": 26.9124,
+      "lng": 75.8072,
+      "location": "C Scheme",
+      "rating": 4.3,
+      "phone": "01414082222",
+      "timings": "7:30 AM - 10 PM"
+    },
+    {
+      "id": "c6",
+      "name": "Curious Life Coffee Roasters",
+      "lat": 26.9150,
+      "lng": 75.8100,
+      "location": "C Scheme",
+      "rating": 4.5,
+      "phone": "09829000000",
+      "timings": "8 AM - 10 PM"
+    },
+    {
+      "id": "c7",
+      "name": "Cafe Quaint",
+      "lat": 26.9200,
+      "lng": 75.8050,
+      "location": "MI Road",
+      "rating": 4.4,
+      "phone": "09828011111",
+      "timings": "10 AM - 10 PM"
+    }
+  ],
+
+  "night-cafes": [
+    {
+      "id": "n1",
+      "name": "Night Jar Cafe",
+      "lat": 26.9100,
+      "lng": 75.8000,
+      "location": "C Scheme",
+      "rating": 4.3,
+      "phone": "09828022222",
+      "timings": "6 PM - 3 AM"
+    },
+    {
+      "id": "n2",
+      "name": "Skyfall by Replay",
+      "lat": 26.9075,
+      "lng": 75.7900,
+      "location": "C Scheme",
+      "rating": 4.4,
+      "phone": "09828033333",
+      "timings": "6 PM - 2 AM"
+    },
+    {
+      "id": "n3",
+      "name": "The Forresta Kitchen & Bar",
+      "lat": 26.9300,
+      "lng": 75.7900,
+      "location": "Bani Park",
+      "rating": 4.3,
+      "phone": "09828044444",
+      "timings": "7 PM - 2 AM"
+    },
+    {
+      "id": "n4",
+      "name": "Blackout Club",
+      "lat": 26.9100,
+      "lng": 75.8050,
+      "location": "C Scheme",
+      "rating": 4.2,
+      "phone": "09828055555",
+      "timings": "8 PM - 3 AM"
+    },
+    {
+      "id": "n5",
+      "name": "House of People",
+      "lat": 26.9080,
+      "lng": 75.7900,
+      "location": "C Scheme",
+      "rating": 4.3,
+      "phone": "09828066666",
+      "timings": "7 PM - 2 AM"
+    },
+    {
+      "id": "n6",
+      "name": "Steam Jaipur",
+      "lat": 26.9260,
+      "lng": 75.8250,
+      "location": "Rambagh Palace",
+      "rating": 4.5,
+      "phone": "01416660000",
+      "timings": "7 PM - 1 AM"
+    },
+    {
+      "id": "n7",
+      "name": "Zarza Club & Kitchen",
+      "lat": 26.9050,
+      "lng": 75.7950,
+      "location": "C Scheme",
+      "rating": 4.2,
+      "phone": "09828077777",
+      "timings": "7 PM - 2 AM"
+    }
+  ]
+}

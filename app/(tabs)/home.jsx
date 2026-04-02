@@ -79,28 +79,28 @@ export default function Home() {
           
           <View className="flex flex-row justify-between">
             
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/type?mode=restaurants")}>
+            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/restaurants")}>
               <View className="w-14 h-14 bg-amber-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🍽️</Text>
               </View>
               <Text className="text-xs font-medium mt-1 text-slate-600">Restaurants</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/type?mode=restaurants")}>
+            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/street-food")}>
               <View className="w-14 h-14 bg-amber-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🌮</Text>
               </View>
               <Text className="text-xs font-medium mt-1 text-slate-600">Street Food</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/type?mode=restaurants")}>
+            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/chill-cafes")}>
               <View className="w-14 h-14 bg-amber-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">☕</Text>
               </View>
               <Text className="text-xs font-medium mt-1 text-slate-600"> Chill Cafes</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/type?mode=restaurants")}>
+            <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/night-cafes")}>
               <View className="w-14 h-14 bg-amber-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🍔</Text>
               </View>
@@ -108,6 +108,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
         </View>
+
 
         {/* Medical */}
         <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-rose-100">
