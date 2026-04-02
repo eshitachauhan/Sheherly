@@ -1,10 +1,19 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Logout() {
-
   const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("token");
+      router.replace("/signin");
+    } catch (error) {
+      console.log("Logout error:", error);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#f6f7fb] items-center justify-center px-6">
@@ -13,11 +22,17 @@ export default function Logout() {
       </Text>
 
       <View className="flex-row space-x-4">
-        <TouchableOpacity className="bg-gray-300 p-4 rounded-2xl w-32 items-center">
-          <Text className="text-gray-800 font-semibold" onPress={()=>router.push("/profile")} >Cancel</Text>
+        <TouchableOpacity
+          className="bg-gray-300 p-4 rounded-2xl w-32 items-center"
+          onPress={() => router.push("/profile")}
+        >
+          <Text className="text-gray-800 font-semibold">Cancel</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="bg-red-500 p-4 rounded-2xl w-32 items-center" onPress={()=>router.push("/signin")}>
+        <TouchableOpacity
+          className="bg-red-500 p-4 rounded-2xl w-32 items-center"
+          onPress={handleLogout}
+        >
           <Text className="text-white font-semibold">Logout</Text>
         </TouchableOpacity>
       </View>

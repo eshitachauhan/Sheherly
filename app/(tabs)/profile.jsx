@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-const BASE_URL = "http://10.108.85.250:8000";
+const BASE_URL = "http://10.231.186.139:8000";
 
 const settingsOptions = [
   { id: "1", title: "Edit Profile", emoji: "✏️", route: "edit" },
@@ -20,14 +20,15 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
- 
   useFocusEffect(
     React.useCallback(() => {
       const fetchProfile = async () => {
         setLoading(true);
         try {
           const token = await SecureStore.getItemAsync("token");
+
           if (!token) {
+            setUser(null); // guest user
             setLoading(false);
             return;
           }
@@ -40,6 +41,7 @@ export default function Profile() {
           setUser(data);
         } catch (err) {
           console.log("PROFILE FETCH ERROR:", err);
+          setUser(null);
         } finally {
           setLoading(false);
         }
@@ -57,29 +59,42 @@ export default function Profile() {
     );
   }
 
- 
-  const profileSections = [
-    {
-      title: "Personal Details",
-      items: [
-        { label: "Name", value: String(user?.name || "Add name") },
-        { label: "Email", value: String(user?.email || "Add email") },
-        { label: "Phone", value: String(user?.phone || "Add phone number") },
-      ],
-    },
-  ];
+  const isGuest = !user;
+
+  const profileSections = isGuest
+    ? [
+        {
+          title: "Account",
+          items: [{ label: "Email", value: "Add email" }],
+        },
+      ]
+    : [
+        {
+          title: "Personal Details",
+          items: [
+            { label: "Name", value: String(user?.name || "Add name") },
+            { label: "Email", value: String(user?.email || "Add email") },
+            { label: "Phone", value: String(user?.phone || "Add phone number") },
+          ],
+        },
+      ];
 
   return (
     <SafeAreaView className="flex-1 bg-[#f6f7fb]">
       <ScrollView showsVerticalScrollIndicator={false}>
-       
+        
+        {/* Profile Avatar */}
         <View className="items-center mt-8 mb-6">
           <View className="w-24 h-24 rounded-full bg-blue-200 items-center justify-center">
             <Text className="text-5xl">👤</Text>
           </View>
+
+          <Text className="text-lg font-semibold mt-3 text-gray-800">
+            {isGuest ? "Guest User" : user?.name || "User"}
+          </Text>
         </View>
 
-       
+        {/* Profile Details */}
         <View className="mx-6">
           {profileSections.map((section, index) => (
             <View
@@ -127,35 +142,37 @@ export default function Profile() {
           ))}
         </View>
 
-       
-        <View className="mx-6">
-          <Text className="text-base font-bold text-gray-800 mb-3">
-            Settings
-          </Text>
+        {/* Settings only for signed-in users */}
+        {!isGuest && (
+          <View className="mx-6">
+            <Text className="text-base font-bold text-gray-800 mb-3">
+              Settings
+            </Text>
 
-          {settingsOptions.map((option) => (
-            <Link key={option.id} href={`/profile/${option.route}`} asChild>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                className={`flex-row items-center p-4 rounded-2xl mb-4 shadow
-                  ${option.danger ? "bg-red-50" : "bg-white"}`}
-              >
-                <Text className="text-2xl mr-4">{option.emoji}</Text>
-
-                <Text
-                  className={`flex-1 text-base font-semibold ${
-                    option.danger ? "text-red-600" : "text-gray-800"
+            {settingsOptions.map((option) => (
+              <Link key={option.id} href={`/profile/${option.route}`} asChild>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  className={`flex-row items-center p-4 rounded-2xl mb-4 shadow ${
+                    option.danger ? "bg-red-50" : "bg-white"
                   }`}
                 >
-                  {option.title}
-                </Text>
+                  <Text className="text-2xl mr-4">{option.emoji}</Text>
 
-                <Text className="text-gray-400 text-xl">›</Text>
-              </TouchableOpacity>
-            </Link>
-          ))}
-        </View>
+                  <Text
+                    className={`flex-1 text-base font-semibold ${
+                      option.danger ? "text-red-600" : "text-gray-800"
+                    }`}
+                  >
+                    {option.title}
+                  </Text>
 
+                  <Text className="text-gray-400 text-xl">›</Text>
+                </TouchableOpacity>
+              </Link>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

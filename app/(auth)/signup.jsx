@@ -12,7 +12,7 @@ import * as SecureStore from "expo-secure-store";
 import validationSchema from '../../utils/authSchema';
 const logo = require("../../assets/images/sheherlyTitle.png")
 
-const BASE_URL = "http://10.108.85.250:8000"; 
+const BASE_URL = "http://10.231.186.139:8000"; 
 
 const Signup = () => {
   const router = useRouter();

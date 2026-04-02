@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-const BASE_URL = "http://10.108.85.250:8000";
+const BASE_URL = "http://10.231.186.139:8000";
 
 export default function EditProfile() {
   const router = useRouter();

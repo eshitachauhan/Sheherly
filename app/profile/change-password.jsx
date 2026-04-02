@@ -4,7 +4,7 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-const BASE_URL = "http://10.108.85.250:8000";
+const BASE_URL = "http://10.231.186.139:8000";
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function ChangePassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChangePassword = async () => {
-    
+    // Validation
     if (!currentPassword || !newPassword || !confirmPassword) {
       Alert.alert("Error", "All fields are required");
       return;
@@ -26,8 +26,13 @@ export default function ChangePassword() {
     }
 
     try {
-      
       const token = await AsyncStorage.getItem("token");
+
+      if (!token) {
+        Alert.alert("Error", "User not logged in");
+        router.replace("/signin");
+        return;
+      }
 
       const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
         method: "POST",
@@ -41,14 +46,14 @@ export default function ChangePassword() {
         }),
       });
 
-      const text = await res.text();
-      console.log("RAW RESPONSE:", text);
+      const data = await res.json(); // ✅ FIXED
 
       if (!res.ok) {
         Alert.alert("Error", data.message || "Failed to update password");
         return;
       }
 
+      // Success
       Alert.alert(
         "Password Updated",
         "Please signin again",
@@ -56,15 +61,15 @@ export default function ChangePassword() {
           {
             text: "OK",
             onPress: async () => {
-              await AsyncStorage.removeItem("token"); 
-              router.replace("/signin"); 
+              await AsyncStorage.removeItem("token"); // logout
+              router.replace("/signin");
             },
           },
         ],
         { cancelable: false }
       );
     } catch (error) {
-      console.log("CHANGE PASSWORD FETCH ERROR 👉", error);
+      console.log("CHANGE PASSWORD ERROR 👉", error);
       Alert.alert("Error", "Server not reachable");
     }
   };
@@ -110,6 +115,3 @@ export default function ChangePassword() {
     </SafeAreaView>
   );
 }
-
-
-
