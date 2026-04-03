@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, Linking } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Linking, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import accommodationData from "../../data/accommodationData.json";
@@ -7,6 +7,15 @@ export default function AccommodationTypePage() {
   const { type } = useLocalSearchParams();
 
   const data = accommodationData[type] || [];
+
+  const openLink = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert("Error", "Invalid link");
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f5f9]">
@@ -29,6 +38,13 @@ export default function AccommodationTypePage() {
 
           const isPG = type === "pg";
 
+          // 🔥 Pre-calculate cheapest & sorted platforms
+          const sortedPlatforms = item.platforms
+            ? [...item.platforms].sort((a, b) => a.price - b.price)
+            : [];
+
+          const cheapest = sortedPlatforms[0];
+
           return (
             <View className="bg-white p-4 rounded-2xl mb-4 shadow">
 
@@ -45,7 +61,7 @@ export default function AccommodationTypePage() {
               {/* Directions */}
               <TouchableOpacity
                 onPress={() =>
-                  Linking.openURL(
+                  openLink(
                     `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`
                   )
                 }
@@ -54,10 +70,10 @@ export default function AccommodationTypePage() {
                 <Text className="text-center text-sm">View Location</Text>
               </TouchableOpacity>
 
-              {/* 🔥 PG SPECIAL UI */}
+              {/* 🔥 PG UI */}
               {isPG ? (
                 <TouchableOpacity
-                  onPress={() => Linking.openURL(`tel:${item.phone}`)}
+                  onPress={() => openLink(`tel:${item.phone}`)}
                   className="mt-3 bg-green-500 px-3 py-2 rounded-lg"
                 >
                   <Text className="text-white text-center font-semibold">
@@ -66,50 +82,50 @@ export default function AccommodationTypePage() {
                 </TouchableOpacity>
               ) : (
                 <>
-                  {/* Platforms */}
-                  <View className="mt-3">
-                    {item.platforms.map((platform, index) => {
-                      const cheapest = item.platforms.reduce((min, p) =>
-                        p.price < min.price ? p : min
-                      );
+                  {/* Platforms - Horizontal Scroll */}
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={sortedPlatforms}
+                    keyExtractor={(p, i) => i.toString()}
+                    className="mt-3"
+                    renderItem={({ item: platform }) => {
+
+                      const isCheapest = platform.price === cheapest?.price;
 
                       return (
                         <View
-                          key={index}
-                          className={`flex-row justify-between items-center p-2 rounded-lg mb-2 ${platform.price === cheapest.price
-                              ? "bg-green-100"
-                              : "bg-gray-100"
-                            }`}
+                          className={`mr-3 p-3 rounded-xl min-w-[140px] ${
+                            isCheapest ? "bg-green-100" : "bg-gray-100"
+                          }`}
                         >
                           <Text className="text-sm font-medium">
                             {platform.name}
                           </Text>
 
-                          <Text className="text-sm font-bold">
+                          <Text className="text-sm font-bold mt-1">
                             ₹{platform.price}
                           </Text>
 
                           <TouchableOpacity
-                            onPress={() => Linking.openURL(platform.link)}
-                            className="bg-blue-500 px-2 py-1 rounded"
+                            onPress={() => openLink(platform.link)}
+                            className="bg-blue-500 mt-2 px-2 py-1 rounded"
                           >
-                            <Text className="text-white text-xs">
+                            <Text className="text-white text-xs text-center">
                               Book
                             </Text>
                           </TouchableOpacity>
                         </View>
                       );
-                    })}
-                  </View>
+                    }}
+                  />
 
                   {/* Best Price */}
-                  <Text className="text-xs text-green-600 mt-2">
-                    💰 Best price: {
-                      item.platforms.reduce((min, p) =>
-                        p.price < min.price ? p : min
-                      ).name
-                    }
-                  </Text>
+                  {cheapest && (
+                    <Text className="text-xs text-green-600 mt-2">
+                      💰 Best deal on {cheapest.name} for ₹{cheapest.price}
+                    </Text>
+                  )}
                 </>
               )}
 
@@ -125,4 +141,3 @@ export default function AccommodationTypePage() {
     </SafeAreaView>
   );
 }
-
