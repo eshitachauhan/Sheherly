@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from chatbot import get_chatbot_response
+from chatbot.chatbot import get_chatbot_response
 
-# ✅ THIS IS WHAT MAIN.PY IMPORTS
 router = APIRouter(tags=["Chatbot"])
 
 class ChatRequest(BaseModel):

@@ -1,0 +1,197 @@
+{
+  "city_profile": {
+    "name": "Jaipur",
+    "state": "Rajasthan",
+    "nickname": "Pink City",
+    "languages": ["Hindi", "English", "Rajasthani"],
+    "local_vibe": "Heritage city with a mix of modern lifestyle",
+    "people_behavior": "Generally polite and helpful",
+    "daily_active_hours": "8:00 AM – 10:00 PM"
+  },
+
+  "daily_life_basics": {
+    "water": {
+      "drinking": "Use RO or bottled water",
+      "availability": "24x7"
+    },
+    "electricity": {
+      "power_supply": "Mostly continuous",
+      "power_cut_timing": "Occasional cuts during summer afternoons"
+    },
+    "internet": {
+      "providers": ["JioFiber", "Airtel", "Local broadband"],
+      "service_hours": "24x7"
+    }
+  },
+
+  "areas_and_localities": {
+    "mansarovar": {
+      "type": "Residential",
+      "locals_say": "Well-planned and metro connected",
+      "active_hours": "6:00 AM – 10:00 PM",
+      "best_time_to_visit": "Morning or evening"
+    },
+    "jagatpura": {
+      "type": "Student hub",
+      "locals_say": "Affordable PGs and calm surroundings",
+      "active_hours": "7:00 AM – 9:30 PM",
+      "best_time_to_visit": "Daytime"
+    },
+    "mi_road": {
+      "type": "Commercial",
+      "locals_say": "Busy central area",
+      "active_hours": "10:00 AM – 10:00 PM",
+      "best_time_to_visit": "Evening"
+    },
+    "malviya_nagar": {
+      "type": "Mixed residential-commercial",
+      "locals_say": "Close to airport and malls",
+      "active_hours": "8:00 AM – 10:00 PM"
+    }
+  },
+
+  "transport_local_tips": {
+    "auto_rickshaw": {
+      "availability": "7:00 AM – 10:00 PM",
+      "locals_say": "Meter rarely used",
+      "tip": "Fix fare before boarding"
+    },
+    "cabs": {
+      "apps": ["Ola", "Uber"],
+      "availability": "24x7",
+      "peak_hours": "9:00 AM – 11:00 AM, 6:00 PM – 9:00 PM"
+    },
+    "buses": {
+      "availability": "5:30 AM – 10:30 PM",
+      "locals_say": "Affordable but crowded during office hours"
+    },
+    "jaipur_metro": {
+      "operational_hours": "6:20 AM – 9:30 PM",
+      "best_time": "Non-peak hours"
+    }
+  },
+
+  "food_culture": {
+    "breakfast": {
+      "time": "7:00 AM – 10:00 AM",
+      "locals_eat": ["Pyaaz Kachori", "Kachori Sabzi", "Tea"]
+    },
+    "lunch": {
+      "time": "1:00 PM – 3:00 PM",
+      "locals_eat": ["Dal Baati Churma", "Rajasthani Thali"]
+    },
+    "dinner": {
+      "time": "8:00 PM – 10:30 PM",
+      "locals_eat": ["Roti Sabzi", "Street snacks"]
+    },
+    "street_food": {
+      "best_time": "Evening after 6:00 PM",
+      "note": "Prefer crowded stalls for hygiene"
+    }
+  },
+
+  "markets_local_intelligence": {
+    "johari_bazaar": {
+      "timings": "10:00 AM – 8:00 PM",
+      "best_time": "4:00 PM – 7:00 PM",
+      "locals_say": "Best for traditional jewelry",
+      "bargaining": "Expected"
+    },
+    "bapu_bazaar": {
+      "timings": "10:00 AM – 9:00 PM",
+      "best_time": "Evening",
+      "locals_say": "Good for souvenirs and textiles"
+    },
+    "tripolia_bazaar": {
+      "timings": "10:30 AM – 7:30 PM",
+      "best_time": "Morning",
+      "locals_say": "Known for lac bangles"
+    }
+  },
+
+  "temples_and_religious_places": {
+    "general_rules": {
+      "entry_time": "Early morning to late evening",
+      "dress_code": "Modest clothing required",
+      "electronics": "Mobiles usually not allowed"
+    },
+    "birla_mandir": {
+      "opening_time": "6:00 AM",
+      "closing_time": "9:00 PM",
+      "aarti_timings": {
+        "morning": "6:30 AM",
+        "evening": "7:00 PM"
+      },
+      "locals_say": "Peaceful in mornings, crowded in evenings"
+    },
+    "govind_dev_ji": {
+      "opening_time": "4:30 AM",
+      "closing_time": "9:00 PM",
+      "aarti_note": "Multiple aartis throughout the day",
+      "crowd_peak": "Festival days and evenings"
+    }
+  },
+
+  "places_to_visit": {
+    "hawa_mahal": {
+      "timings": "9:00 AM – 4:30 PM",
+      "best_time": "Morning",
+      "locals_say": "Visit early to avoid heat and crowds"
+    },
+    "amer_fort": {
+      "timings": "8:00 AM – 5:30 PM",
+      "best_time": "Early morning",
+      "locals_say": "Avoid weekends if possible"
+    },
+    "city_palace": {
+      "timings": "9:30 AM – 5:00 PM",
+      "best_time": "Late morning"
+    }
+  },
+
+  "safety_and_common_sense": {
+    "general": "City is safe but remain alert in crowded areas",
+    "night_travel": {
+      "safe_time": "Till 10:00 PM in most areas",
+      "after_10_pm": "Prefer cabs"
+    }
+  },
+
+  "seasonal_local_advice": {
+    "summer": {
+      "active_hours": "6:00 AM – 11:00 AM and after 6:00 PM",
+      "locals_say": "Avoid afternoon travel"
+    },
+    "monsoon": {
+      "active_hours": "Daytime preferred",
+      "locals_say": "Check road conditions before travel"
+    },
+    "winter": {
+      "active_hours": "All day",
+      "locals_say": "Best season to explore Jaipur"
+    }
+  },
+
+  "emergency_and_help": {
+    "police": {
+      "number": "100",
+      "available": "24x7"
+    },
+    "ambulance": {
+      "number": "108",
+      "available": "24x7"
+    },
+    "women_helpline": {
+      "number": "181",
+      "available": "24x7"
+    }
+  },
+
+  "things_locals_wish_newcomers_knew": [
+    "Most shops open after 10 AM",
+    "Summers are extremely hot in afternoons",
+    "Bargaining is normal in local markets",
+    "Festivals affect timings everywhere",
+    "Evenings are best for outings"
+  ]
+}
