@@ -1,0 +1,137 @@
+{
+  "police": [
+    {
+      "id": "p2",
+      "name": "Vaishali Nagar Police Station",
+      "lat": 26.911,
+      "lng": 75.7445,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p3",
+      "name": "Malviya Nagar Police Station",
+      "lat": 26.8505,
+      "lng": 75.812,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p4",
+      "name": "Mansarovar Police Station",
+      "lat": 26.85,
+      "lng": 75.768,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p5",
+      "name": "Sanganer Police Station",
+      "lat": 26.82,
+      "lng": 75.8,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p6",
+      "name": "Shyam Nagar Police Station",
+      "lat": 26.895,
+      "lng": 75.77,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p7",
+      "name": "Civil Lines Police Station",
+      "lat": 26.91,
+      "lng": 75.78,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p8",
+      "name": "Vidhyadhar Nagar Police Station",
+      "lat": 26.94,
+      "lng": 75.78,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p9",
+      "name": "Jhotwara Police Station",
+      "lat": 26.9405,
+      "lng": 75.74,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p10",
+      "name": "Bani Park Police Station",
+      "lat": 26.93,
+      "lng": 75.79,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p11",
+      "name": "Sindhi Camp Police Station",
+      "lat": 26.92,
+      "lng": 75.8,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p12",
+      "name": "Adarsh Nagar Police Station",
+      "lat": 26.89,
+      "lng": 75.83,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p13",
+      "name": "Transport Nagar Police Station",
+      "lat": 26.91,
+      "lng": 75.84,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p14",
+      "name": "Ramganj Police Station",
+      "lat": 26.92,
+      "lng": 75.83,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p15",
+      "name": "Amer Police Station",
+      "lat": 26.9855,
+      "lng": 75.8513,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p16",
+      "name": "Jawahar Nagar Police Station",
+      "lat": 26.8905,
+      "lng": 75.82,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p17",
+      "name": "Brahmpuri Police Station",
+      "lat": 26.94,
+      "lng": 75.83,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p18",
+      "name": "Sodala Police Station",
+      "lat": 26.9,
+      "lng": 75.77,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p19",
+      "name": "Chomu Police Station",
+      "lat": 27.17,
+      "lng": 75.72,
+      "addr:city": "Jaipur"
+    },
+    {
+      "id": "p20",
+      "name": "Kalwar Police Station",
+      "lat": 26.97,
+      "lng": 75.69,
+      "addr:city": "Jaipur"
+    }
+  ]
+}

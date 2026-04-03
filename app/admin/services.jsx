@@ -1,205 +1,320 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
-  Text,
+ Text,
   FlatList,
   TouchableOpacity,
+  TextInput,
+  Alert,
+  Modal,
   ScrollView,
-  StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import medData from "../data/medData.json";
-import foodData from "../data/foodData.json";
-import transData from "../data/transData.json";
-import localData from "../data/localData.json";
-import accommodationData from "../data/accommodationData.json";
-import famousSpots from "../data/famousSpots.json";
-import policeData from "../data/policeData.json";
+const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace this
 
-const allData = {
-  medical: medData,
-  food: foodData,
-  transport: transData,
-  localServices: localData,
-  accommodation: accommodationData,
-  famousSpots: famousSpots,
-  police: policeData,
+const categories = {
+  food: ["restaurants", "street-food", "chill-cafes", "night-cafes"],
+  medical: ["hospitals", "pharmacies", "clinics", "labs"],
+  transportation: ["bus", "cab", "rickshaw", "bikeRentals"],
+  local: ["finance", "groceries", "local-markets", "house-services"],
+  accommodation: ["hotels", "hostels", "pg", "homestays", "resorts"],
+  famous: ["parks-gardens", "historic-monuments", "art-galleries", "shopping-malls", "local-markets", "water-parks", "religious-places", "view-points"],
+  safety: null,
 };
 
 export default function Services() {
-  const [selectedMain, setSelectedMain] = useState("medical");
-  const [data, setData] = useState(allData["medical"]);
+  const [category, setCategory] = useState("food");
+  const [type, setType] = useState("restaurants");
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const isNested = typeof data === "object" && !Array.isArray(data);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newItemName, setNewItemName] = useState("");
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    isNested ? Object.keys(data)[0] : null
-  );
+  const fetchData = async () => {
+    try {
+      setLoading(true);
 
-  const switchMain = (key) => {
-    const newData = allData[key];
-    setSelectedMain(key);
-    setData(newData);
+      const url = type
+        ? `${BASE_URL}/api/admin/data/${category}/${type}`
+        : `${BASE_URL}/api/admin/data/${category}`;
 
-    if (typeof newData === "object" && !Array.isArray(newData)) {
-      setSelectedCategory(Object.keys(newData)[0]);
-    } else {
-      setSelectedCategory(null);
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (Array.isArray(json)) {
+        setData(json);
+      } else {
+        setData([]);
+      }
+    } catch (err) {
+      console.log("FETCH ERROR:", err);
+      Alert.alert("Error", "Failed to load data");
+      setData([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const currentList = isNested ? data[selectedCategory] : data;
-
-  const deleteItem = (index) => {
-    if (isNested) {
-      const updated = [...data[selectedCategory]];
-      updated.splice(index, 1);
-
-      setData({
-        ...data,
-        [selectedCategory]: updated,
-      });
+  useEffect(() => {
+    if (category === "safety") {
+      setType(null);
     } else {
-      const updated = [...data];
-      updated.splice(index, 1);
-      setData(updated);
+      setType(categories[category]?.[0] || null);
     }
+  }, [category]);
+
+  useEffect(() => {
+    fetchData();
+  }, [category, type]);
+
+  const handleAdd = async () => {
+    if (!newItemName.trim()) {
+      Alert.alert("Error", "Please enter a name");
+      return;
+    }
+
+    const item = {
+      id: Date.now().toString(),
+      name: newItemName,
+    };
+
+    try {
+      const url = type
+        ? `${BASE_URL}/api/admin/data/${category}/${type}`
+        : `${BASE_URL}/api/admin/data/${category}`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        Alert.alert("Error", result.message || "Failed to add item");
+        return;
+      }
+
+      setNewItemName("");
+      setShowAddModal(false);
+      fetchData();
+    } catch (err) {
+      console.log("ADD ERROR:", err);
+      Alert.alert("Error", "Failed to add item");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const url = type
+        ? `${BASE_URL}/api/admin/data/${category}/${type}/${id}`
+        : `${BASE_URL}/api/admin/data/${category}/${id}`;
+
+      const res = await fetch(url, {
+        method: "DELETE",
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        Alert.alert("Error", result.message || "Failed to delete item");
+        return;
+      }
+
+      fetchData();
+    } catch (err) {
+      console.log("DELETE ERROR:", err);
+      Alert.alert("Error", "Failed to delete item");
+    }
+  };
+
+  const getDisplayName = (item) => {
+    return (
+      item.name ||
+      item.title ||
+      item.route ||
+      item.type ||
+      item.service ||
+      item.category ||
+      item.address ||
+      "Unnamed Item"
+    );
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f7fa" }}>
-      <StatusBar barStyle="dark-content" />
-
-      {/* 🔹 TOP CONTAINER (fixed background) */}
-      <View
-        style={{
-          backgroundColor: "white",
-          paddingVertical: 10,
-          paddingLeft: 15,
-          borderBottomWidth: 1,
-          borderColor: "#ddd",
-        }}
-      >
-        {/* MAIN CATEGORY */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ alignItems: "center" }}
-        >
-          {Object.keys(allData).map((key) => (
-            <TouchableOpacity
-              key={key}
-              onPress={() => switchMain(key)}
-              style={{
-                height: 36,
-                justifyContent: "center",
-                paddingHorizontal: 15,
-                borderRadius: 20,
-                marginRight: 10,
-                backgroundColor:
-                  selectedMain === key ? "#218fb4" : "#eef2f5",
-              }}
-            >
-              <Text
-                style={{
-                  color: selectedMain === key ? "white" : "#333",
-                  fontWeight: "600",
-                }}
-              >
-                {key.toUpperCase()}
+    <SafeAreaView className="flex-1 bg-[#f4f6fb]">
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+        contentContainerStyle={{ paddingBottom: 30 }}
+        ListHeaderComponent={
+          <View>
+            {/* Header */}
+            <View className="px-6 pt-6 pb-4">
+              <Text className="text-3xl font-bold text-gray-900">
+                Manage Services
               </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+            </View>
 
-        {/* SUBCATEGORY */}
-        {isNested && (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ alignItems: "center", marginTop: 8 }}
-          >
-            {Object.keys(data).map((key) => (
-              <TouchableOpacity
-                key={key}
-                onPress={() => setSelectedCategory(key)}
-                style={{
-                  height: 32,
-                  justifyContent: "center",
-                  paddingHorizontal: 12,
-                  borderRadius: 15,
-                  marginRight: 8,
-                  backgroundColor:
-                    selectedCategory === key ? "#ffd54f" : "#fff3cd",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#333",
-                    fontWeight:
-                      selectedCategory === key ? "600" : "400",
-                  }}
-                >
-                  {key}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
-      </View>
-
-      {/* 🔹 CONTENT AREA */}
-      <View style={{ flex: 1, padding: 15 }}>
-
-        {/* ADD BUTTON */}
-        <TouchableOpacity
-          style={{
-            alignSelf: "flex-end",
-            marginBottom: 10,
-            backgroundColor: "#218fb4",
-            paddingVertical: 6,
-            paddingHorizontal: 15,
-            borderRadius: 10,
-          }}
-          onPress={() => console.log("Add new item")}
-        >
-          <Text style={{ color: "white", fontWeight: "600" }}>
-            + Add
-          </Text>
-        </TouchableOpacity>
-
-        {/* LIST */}
-        <FlatList
-          data={currentList || []}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item, index }) => (
-            <View
-              style={{
-                backgroundColor: "white",
-                padding: 15,
-                borderRadius: 12,
-                marginBottom: 10,
-                elevation: 2,
-              }}
+            {/* Category chips */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
             >
-              <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                {item.name || item.title}
-              </Text>
+              <View className="flex-row">
+                {Object.keys(categories).map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    onPress={() => setCategory(cat)}
+                    className={`px-5 py-3 rounded-2xl mr-3 ${
+                      category === cat ? "bg-[#3C91E6]" : "bg-[#e8ebf2]"
+                    }`}
+                  >
+                    <Text
+                      className={`font-medium ${
+                        category === cat ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
 
-              <TouchableOpacity
-                onPress={() => deleteItem(index)}
-                style={{ marginTop: 8 }}
+            {/* Subcategory chips */}
+            {categories[category] && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 14 }}
               >
-                <Text style={{ color: "red", fontWeight: "500" }}>
-                  Delete
+                <View className="flex-row">
+                  {categories[category].map((t) => (
+                    <TouchableOpacity
+                      key={t}
+                      onPress={() => setType(t)}
+                      className={`px-4 py-2 rounded-xl mr-2 ${
+                        type === t ? "bg-[#CDEB8B]" : "bg-[#eef1f6]"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          type === t ? "text-[#2E5E1A]" : "text-gray-700"
+                        }`}
+                      >
+                        {t}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            )}
+
+            {/* Add Button */}
+            <View className="px-6 mt-6">
+              <TouchableOpacity
+                onPress={() => setShowAddModal(true)}
+                className="bg-[#218fb4] py-4 rounded-2xl"
+              >
+                <Text className="text-white text-center text-lg font-semibold">
+                  + Add Item
                 </Text>
               </TouchableOpacity>
             </View>
-          )}
-        />
-      </View>
+
+            {/* Loading */}
+            {loading && (
+              <View className="mt-8 items-center">
+                <ActivityIndicator size="large" color="#218fb4" />
+                <Text className="mt-2 text-gray-500">Loading...</Text>
+              </View>
+            )}
+          </View>
+        }
+        renderItem={({ item }) => (
+          <View className="bg-white mx-6 mt-5 px-5 py-5 rounded-3xl shadow-sm border border-[#eef1f6]">
+            <Text className="text-lg font-semibold text-gray-900">
+              {getDisplayName(item)}
+            </Text>
+
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  "Delete Item",
+                  `Delete "${getDisplayName(item)}"?`,
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: () => handleDelete(item.id),
+                    },
+                  ]
+                )
+              }
+              className="mt-4"
+            >
+              <Text className="text-red-500 font-semibold text-base">
+                Delete
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        ListEmptyComponent={
+          !loading ? (
+            <Text className="text-center text-gray-500 mt-12">
+              No items found
+            </Text>
+          ) : null
+        }
+      />
+
+      {/* Add Modal */}
+      <Modal visible={showAddModal} animationType="slide" transparent>
+        <View className="flex-1 bg-black/30 justify-end">
+          <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10">
+            <Text className="text-2xl font-bold text-gray-900 mb-5">
+              Add New Item
+            </Text>
+
+            <TextInput
+              placeholder="Enter item name"
+              value={newItemName}
+              onChangeText={setNewItemName}
+              className="border border-gray-300 rounded-2xl px-4 py-4 text-base bg-[#f8f9fc]"
+            />
+
+            <TouchableOpacity
+              onPress={handleAdd}
+              className="bg-[#218fb4] py-4 rounded-2xl mt-5"
+            >
+              <Text className="text-white text-center text-lg font-semibold">
+                Save Item
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setShowAddModal(false);
+                setNewItemName("");
+              }}
+              className="py-4 rounded-2xl mt-3 bg-[#eef1f6]"
+            >
+              <Text className="text-center text-gray-700 text-lg font-medium">
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

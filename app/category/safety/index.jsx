@@ -1,7 +1,16 @@
-import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
-import policeData from "../../data/policeData.json";
+import { useState, useEffect } from "react";
+
+const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
 
 const emergencyServices = [
   { id: "1", title: "Police", number: "100", emoji: "🚓", desc: "Report crime or danger", color: "#e53935" },
@@ -13,15 +22,36 @@ const emergencyServices = [
 
 export default function SafetyPage() {
   const [showPolice, setShowPolice] = useState(false);
+  const [policeStations, setPoliceStations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const policeStations = (policeData.police || []).map((item, index) => ({
-    id: item.id || `police_${index}`,
-    name: item.name || item["name:en"] || "Police Station",
-    info: item["addr:street"] || item["addr:city"] || "Jaipur",
-    lat: item.lat,
-    lng: item.lng
-  }));
+  const fetchPoliceData = async () => {
+    try {
+      setLoading(true);
 
+      const response = await fetch(`${BASE_URL}/api/admin/data/safety`);
+      const json = await response.json();
+
+      const formatted = (json || []).map((item, index) => ({
+        id: item.id || `police_${index}`,
+        name: item.name || item["name:en"] || "Police Station",
+        info: item["addr:street"] || item["addr:city"] || item.address || "Jaipur",
+        lat: item.lat,
+        lng: item.lng
+      }));
+
+      setPoliceStations(formatted);
+    } catch (error) {
+      console.error("POLICE FETCH ERROR:", error);
+      Alert.alert("Error", "Could not load police station data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPoliceData();
+  }, []);
 
   const makeCall = (number) => {
     Linking.openURL(`tel:${number}`);
@@ -41,7 +71,6 @@ export default function SafetyPage() {
         </View>
 
         <View className="px-4">
-
 
           {emergencyServices.map(item => (
             <TouchableOpacity
@@ -74,8 +103,6 @@ export default function SafetyPage() {
             </TouchableOpacity>
           ))}
 
-
-
           <TouchableOpacity
             onPress={() => setShowPolice(prev => !prev)}
             className="h-20 rounded-2xl bg-orange-300 justify-center items-center mt-4 mb-6 px-4"
@@ -85,35 +112,41 @@ export default function SafetyPage() {
             </Text>
           </TouchableOpacity>
 
-
           {showPolice && (
             <View className="mb-10">
-              {policeStations.map(item => (
-                <View
-                  key={item.id}
-                  className="bg-orange-100 p-4 rounded-2xl mb-3 shadow"
-                >
-                  <Text className="text-lg font-semibold">{item.name}</Text>
-
-                  <Text className="text-sm text-gray-500 mt-1">
-                    📍 {item.info}
-                  </Text>
-
-                  {/* Directions */}
-                  <TouchableOpacity
-                    onPress={() =>
-                      Linking.openURL(
-                        `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`
-                      )
-                    }
-                    className="mt-3 bg-red-500 px-3 py-2 rounded-lg"
-                  >
-                    <Text className="text-white text-center text-sm">
-                      Get Directions
-                    </Text>
-                  </TouchableOpacity>
+              {loading ? (
+                <View className="items-center mt-6">
+                  <ActivityIndicator size="large" color="#e53935" />
+                  <Text className="mt-2 text-gray-500">Loading police stations...</Text>
                 </View>
-              ))}
+              ) : (
+                policeStations.map(item => (
+                  <View
+                    key={item.id}
+                    className="bg-orange-100 p-4 rounded-2xl mb-3 shadow"
+                  >
+                    <Text className="text-lg font-semibold">{item.name}</Text>
+
+                    <Text className="text-sm text-gray-500 mt-1">
+                      📍 {item.info}
+                    </Text>
+
+                    {/* Directions */}
+                    <TouchableOpacity
+                      onPress={() =>
+                        Linking.openURL(
+                          `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`
+                        )
+                      }
+                      className="mt-3 bg-red-500 px-3 py-2 rounded-lg"
+                    >
+                      <Text className="text-white text-center text-sm">
+                        Get Directions
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ))
+              )}
             </View>
           )}
 

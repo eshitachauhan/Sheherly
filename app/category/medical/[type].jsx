@@ -1,16 +1,25 @@
-import { View, Text, FlatList, TouchableOpacity, Linking } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
 
-import medicalData from "../../data/medData.json";
+const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
 
 export default function MedicalTypePage() {
   const { type } = useLocalSearchParams();
 
   const [userLocation, setUserLocation] = useState(null);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // 📍 Get user location
   useEffect(() => {
@@ -25,49 +34,70 @@ export default function MedicalTypePage() {
 
   // 🧠 Open/Closed Logic
   const isOpenNow = (timings) => {
+    if (!timings) return false;
+
     const currentHour = new Date().getHours();
 
-    if (timings === "24 hours") return true;
+    if (timings.toLowerCase() === "24 hours") return true;
 
-    const [start, end] = timings.split("-").map(Number);
+    const parts = timings.split("-").map(Number);
+    if (parts.length !== 2 || parts.some(isNaN)) return false;
+
+    const [start, end] = parts;
     return currentHour >= start && currentHour <= end;
   };
 
-  // 📏 Distance calc (simple)
+  // 📏 Distance calc
   const getDistance = (lat1, lon1, lat2, lon2) => {
     return Math.sqrt(
       Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2)
     );
   };
 
-  // 🔄 Prepare data
-  useEffect(() => {
-    let rawData = medicalData[type] || [];
+  const fetchMedicalData = async () => {
+    try {
+      setLoading(true);
 
-    let formatted = rawData.map((item, index) => ({
-      id: item.id || `medical_${index}`,
-      name: item.name,
-      address: item.address,
-      lat: item.lat,
-      lng: item.lng,
-      phone: item.phone,
-      timings: item.timings,
-      isOpen: isOpenNow(item.timings),
-    }));
+      const response = await fetch(`${BASE_URL}/api/admin/data/medical/${type}`);
+      const json = await response.json();
 
-    // 📍 Sort by nearest if location available
-    if (userLocation) {
-      formatted.sort((a, b) =>
-        getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lng) -
-        getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lng)
-      );
+      let formatted = (json || []).map((item, index) => ({
+        id: item.id || `medical_${index}`,
+        name: item.name,
+        address: item.address || item.location || "No address available",
+        lat: item.lat,
+        lng: item.lng,
+        phone: item.phone,
+        timings: item.timings || "Not available",
+        isOpen: isOpenNow(item.timings || ""),
+      }));
+
+      // 📍 Sort nearest first if location available
+      if (userLocation) {
+        formatted.sort((a, b) =>
+          getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lng) -
+          getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lng)
+        );
+      }
+
+      setData(formatted);
+    } catch (error) {
+      console.error("MEDICAL FETCH ERROR:", error);
+      Alert.alert("Error", "Could not load medical services");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setData(formatted);
+  useEffect(() => {
+    if (type) {
+      fetchMedicalData();
+    }
   }, [type, userLocation]);
 
   // 📞 Call
   const callPlace = (phone) => {
+    if (!phone || phone === "N/A") return;
     Linking.openURL(`tel:${phone}`);
   };
 
@@ -76,6 +106,15 @@ export default function MedicalTypePage() {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
     Linking.openURL(url);
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#eef7f6] justify-center items-center">
+        <ActivityIndicator size="large" color="#218fb4" />
+        <Text className="mt-3 text-gray-600">Loading medical services...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#eef7f6]">
@@ -113,9 +152,11 @@ export default function MedicalTypePage() {
 
             <View className="flex-row mt-3 space-x-4">
 
-              <TouchableOpacity onPress={() => callPlace(item.phone)}>
-                <Text className="text-blue-600">📞 Call</Text>
-              </TouchableOpacity>
+              {item.phone && item.phone !== "N/A" && (
+                <TouchableOpacity onPress={() => callPlace(item.phone)}>
+                  <Text className="text-blue-600">📞 Call</Text>
+                </TouchableOpacity>
+              )}
 
               <TouchableOpacity onPress={() => openMaps(item.lat, item.lng)}>
                 <Text className="text-green-600">🧭 Directions</Text>

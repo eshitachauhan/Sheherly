@@ -4,22 +4,41 @@ import {
   FlatList,
   TouchableOpacity,
   Linking,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
-import foodData from "../../data/foodData.json";
+
+const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
 
 export default function FoodTypePage() {
   const { slug } = useLocalSearchParams();
 
   const [data, setData] = useState([]);
   const [sortType, setSortType] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Load data
+  const fetchFoodData = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${BASE_URL}/api/admin/data/food/${slug}`);
+      const json = await response.json();
+
+      setData(json || []);
+    } catch (error) {
+      console.error("FOOD FETCH ERROR:", error);
+      Alert.alert("Error", "Could not load food data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (slug && foodData[slug]) {
-      setData(foodData[slug]);
+    if (slug) {
+      fetchFoodData();
     }
   }, [slug]);
 
@@ -28,13 +47,22 @@ export default function FoodTypePage() {
     let sorted = [...data];
 
     if (sortType === "rating") {
-      sorted.sort((a, b) => b.rating - a.rating);
+      sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
 
     return sorted;
   };
 
   const finalData = getSortedData();
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#f3f5f9] justify-center items-center">
+        <ActivityIndicator size="large" color="#218fb4" />
+        <Text className="mt-3 text-gray-600">Loading food places...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f5f9]">
@@ -89,7 +117,7 @@ export default function FoodTypePage() {
                 </TouchableOpacity>
 
                 {/* CALL */}
-                {item.phone && (
+                {item.phone && item.phone !== "N/A" && (
                   <TouchableOpacity
                     onPress={() => Linking.openURL(`tel:${item.phone}`)}
                     className="ml-3"
@@ -102,12 +130,14 @@ export default function FoodTypePage() {
 
             {/* DETAILS */}
             <Text className="text-sm text-gray-500 mt-1">
-              {item.location} · ⭐ {item.rating}
+              {item.location} · ⭐ {item.rating || 0}
             </Text>
 
-            <Text className="text-sm text-gray-500 mt-1">
-              🕒 {item.timings}
-            </Text>
+            {item.timings && (
+              <Text className="text-sm text-gray-500 mt-1">
+                🕒 {item.timings}
+              </Text>
+            )}
 
             {/* ZOMATO BUTTON */}
             {item.zomato && (

@@ -1,10 +1,23 @@
-import { View, Text, FlatList, TouchableOpacity, Linking } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
-import localServicesData from "../../data/localData.json";
+import { useState, useEffect } from "react";
+
+const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
 
 export default function LocalServiceTypePage() {
   const { service } = useLocalSearchParams();
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // 🔥 Normalize Data
   const normalizeLocalServices = (rawData = []) => {
@@ -17,7 +30,7 @@ export default function LocalServiceTypePage() {
             id: item.id,
             name: item.name || item.brand || "Bank / ATM",
             lat: item.lat,
-            lng: item.lon,
+            lng: item.lon || item.lng,
             type: item.amenity.toUpperCase(),
             address: item.address,
             opening_hours: item.opening_hours
@@ -59,7 +72,7 @@ export default function LocalServiceTypePage() {
             lat: item.lat,
             lng: item.lng,
             type: item.type,
-            address: item.area,
+            address: item.area || item.address,
             opening_hours: item.opening_hours,
             phone: item.phone
           };
@@ -70,8 +83,37 @@ export default function LocalServiceTypePage() {
       .filter(Boolean);
   };
 
-  const rawData = localServicesData[service] || [];
-  const data = normalizeLocalServices(rawData);
+  const fetchLocalServices = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${BASE_URL}/api/admin/data/local/${service}`);
+      const json = await response.json();
+
+      const normalized = normalizeLocalServices(json || []);
+      setData(normalized);
+    } catch (error) {
+      console.error("LOCAL SERVICES FETCH ERROR:", error);
+      Alert.alert("Error", "Could not load local services");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (service) {
+      fetchLocalServices();
+    }
+  }, [service]);
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#f6f7fb] justify-center items-center">
+        <ActivityIndicator size="large" color="#218fb4" />
+        <Text className="mt-3 text-gray-600">Loading services...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#f6f7fb]">
@@ -79,7 +121,7 @@ export default function LocalServiceTypePage() {
       {/* 🔹 Header */}
       <View className="p-6">
         <Text className="text-3xl font-bold text-gray-800 capitalize">
-          {service.replace(/-/g, " ")}
+          {service ? service.replace(/-/g, " ") : "Local Services"}
         </Text>
         <Text className="text-sm text-gray-600 mt-1">
           Available services near you
@@ -89,7 +131,7 @@ export default function LocalServiceTypePage() {
       {/* 🔹 List */}
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (

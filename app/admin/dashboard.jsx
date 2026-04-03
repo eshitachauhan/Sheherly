@@ -6,13 +6,29 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
 const logo = require("../../assets/images/sheherlyTitle.png");
 
 export default function Dashboard() {
   const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+      await SecureStore.deleteItemAsync("token");
+
+      router.replace("/");
+    } catch (error) {
+      console.log("LOGOUT ERROR:", error);
+      Alert.alert("Error", "Logout failed");
+    }
+  };
 
   return (
     <SafeAreaView className="bg-white flex-1">
@@ -42,6 +58,16 @@ export default function Dashboard() {
             >
               <Text className="text-lg font-semibold text-center text-[#218fb4ff]">
                 Manage Services
+              </Text>
+            </TouchableOpacity>
+
+            {/* Logout Button */}
+            <TouchableOpacity
+              onPress={handleLogout}
+              className="p-3 mt-6 bg-red-500 rounded-lg"
+            >
+              <Text className="text-lg text-white font-semibold text-center">
+                Logout
               </Text>
             </TouchableOpacity>
 

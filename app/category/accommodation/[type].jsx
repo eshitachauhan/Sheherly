@@ -1,12 +1,15 @@
-import { View, Text, FlatList, TouchableOpacity, Linking, Alert } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Linking, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
-import accommodationData from "../../data/accommodationData.json";
+import { useEffect, useState } from "react";
+
+const BASE_URL = "http://10.231.186.139:9000"; // admin backend
 
 export default function AccommodationTypePage() {
   const { type } = useLocalSearchParams();
 
-  const data = accommodationData[type] || [];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const openLink = async (url) => {
     const supported = await Linking.canOpenURL(url);
@@ -16,6 +19,34 @@ export default function AccommodationTypePage() {
       Alert.alert("Error", "Invalid link");
     }
   };
+
+  const fetchAccommodationData = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/admin/data/accommodation/${type}`);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error("Error fetching accommodation data:", error);
+      Alert.alert("Error", "Could not load accommodation data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (type) {
+      fetchAccommodationData();
+    }
+  }, [type]);
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-[#f3f5f9]">
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text className="mt-3 text-gray-600">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f5f9]">
@@ -38,7 +69,6 @@ export default function AccommodationTypePage() {
 
           const isPG = type === "pg";
 
-          // 🔥 Pre-calculate cheapest & sorted platforms
           const sortedPlatforms = item.platforms
             ? [...item.platforms].sort((a, b) => a.price - b.price)
             : [];
@@ -48,17 +78,14 @@ export default function AccommodationTypePage() {
           return (
             <View className="bg-white p-4 rounded-2xl mb-4 shadow">
 
-              {/* Name */}
               <Text className="text-lg font-semibold">
                 {item.name}
               </Text>
 
-              {/* Info */}
               <Text className="text-sm text-gray-500 mt-1">
                 📍 {item.location} · ⭐ {item.rating} ({item.reviews} reviews)
               </Text>
 
-              {/* Directions */}
               <TouchableOpacity
                 onPress={() =>
                   openLink(
@@ -70,7 +97,6 @@ export default function AccommodationTypePage() {
                 <Text className="text-center text-sm">View Location</Text>
               </TouchableOpacity>
 
-              {/* 🔥 PG UI */}
               {isPG ? (
                 <TouchableOpacity
                   onPress={() => openLink(`tel:${item.phone}`)}
@@ -82,7 +108,6 @@ export default function AccommodationTypePage() {
                 </TouchableOpacity>
               ) : (
                 <>
-                  {/* Platforms - Horizontal Scroll */}
                   <FlatList
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -120,7 +145,6 @@ export default function AccommodationTypePage() {
                     }}
                   />
 
-                  {/* Best Price */}
                   {cheapest && (
                     <Text className="text-xs text-green-600 mt-2">
                       💰 Best deal on {cheapest.name} for ₹{cheapest.price}

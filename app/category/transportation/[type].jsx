@@ -1,98 +1,12 @@
-/*import { View, Text, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
-
-import transportationData from "../../data/transportationData.json"
-
-
-export default function TransportTypePage() {
-  const { type } = useLocalSearchParams();
-
-  const rawData = transportationData[type] || [];
-  const data = rawData.map(item => {
-  
-    if (item.cab_type) {
-      return {
-        id: item.cab_type + item.pickup_location + item.destination,
-        name: item.cab_type,
-        info: `${item.pickup_location} → ${item.destination} · ${item.price_estimate} · ETA ${item.eta_minutes} min`
-      };
-    }
-    if (item.bike_id) {
-      return {
-        id: item.bike_id,
-        name: item.name,
-        info: `${item.type} · ₹${item.price_per_hour}/hr · ${item.available ? "Available" : "Not Available"}`
-      };
-    }
-    if (item.driver_id) {
-      return {
-        id: item.driver_id,
-        name: `${item.driver_name} (${item.vehicle_model})`,
-        info: `${item.operating_zone} · ${item.service_type} · ${item.availability ? "Available" : "Not Available"}`
-      };
-    }
-    if (item.name && item.public_transport_type) {
-      return {
-        id: item.ref || item.name,
-        name: item.name,
-        info: `${item.network || "Unknown Network"} · ${item.public_transport_type}`
-      };
-    }
-    return {
-      id: item.id || JSON.stringify(item),
-      name: item.name || "Unknown",
-      info: JSON.stringify(item)
-    };
-  });
-
-  return (
-    <SafeAreaView className="flex-1 bg-[#f4f6fb]">
-      <View className="p-6">
-        <Text className="text-3xl font-bold text-[#0b3d91] capitalize">
-          {type}
-        </Text>
-        <Text className="text-sm text-gray-600 mt-1">
-          Available services
-        </Text>
-      </View>
-
-      <FlatList
-        data={data}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
-        renderItem={({ item }) => (
-          <View className="bg-white p-4 rounded-2xl mb-3 shadow">
-            <Text className="text-lg font-semibold">{item.name}</Text>
-            <Text className="text-sm text-gray-500 mt-1">
-              {item.info}
-            </Text>
-          </View>
-        )}
-        ListEmptyComponent={
-          <Text className="text-center text-gray-500 mt-10">
-            No services available 😕
-          </Text>
-        }
-      />
-    </SafeAreaView>
-  );
-}
-*/
-
-
-
-
-
-
 import {
   View, Text, FlatList, TouchableOpacity,
-  ScrollView, Linking, Alert
+  ScrollView, Linking, Alert, ActivityIndicator
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import transportationData from "../../data/transData.json";
+import { useState, useEffect } from "react";
+
+const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
 
 // ─── Open external booking URL ───────────────────────────────────────────────
 const openURL = async (url) => {
@@ -113,17 +27,16 @@ const openMaps = (from, to) => {
 // BUS VIEW
 // ════════════════════════════════════════════════════════════════════════════
 function BusView({ data }) {
-  const [filter, setFilter] = useState("all"); // "all" | "ac" | "non-ac"
+  const [filter, setFilter] = useState("all");
 
   const filtered = data.filter(b => {
     if (filter === "ac") return b.ac === true;
     if (filter === "non-ac") return b.ac === false;
     return true;
-  }).sort((a, b) => b.rating - a.rating);
+  }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
   return (
     <>
-      {/* Filter Pills */}
       <View className="flex-row px-4 mb-4 gap-2">
         {["all", "ac", "non-ac"].map(f => (
           <TouchableOpacity
@@ -144,7 +57,6 @@ function BusView({ data }) {
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         renderItem={({ item }) => (
           <View className="bg-white rounded-2xl mb-3 shadow p-4">
-            {/* Header row */}
             <View className="flex-row justify-between items-start mb-2">
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
@@ -166,24 +78,16 @@ function BusView({ data }) {
               </View>
             </View>
 
-            {/* Info row */}
             <View className="flex-row mt-2 gap-3">
-              <View className="flex-row items-center gap-1">
-                <Text className="text-xs text-gray-500">🕒 {item.duration_minutes} mins</Text>
-              </View>
-              <View className="flex-row items-center gap-1">
-                <Text className="text-xs text-gray-500">🔁 {item.frequency}</Text>
-              </View>
-              <View className="flex-row items-center gap-1">
-                <Text className="text-xs text-gray-500">⭐ {item.rating}</Text>
-              </View>
+              <Text className="text-xs text-gray-500">🕒 {item.duration_minutes} mins</Text>
+              <Text className="text-xs text-gray-500">🔁 {item.frequency}</Text>
+              <Text className="text-xs text-gray-500">⭐ {item.rating}</Text>
             </View>
 
             <Text className="text-xs text-gray-400 mt-1">
               First: {item.first_bus} · Last: {item.last_bus}
             </Text>
 
-            {/* View on Maps button */}
             <TouchableOpacity
               className="mt-3 bg-blue-50 border border-blue-200 rounded-xl py-2 items-center"
               onPress={() => openMaps(item.from, item.to)}
@@ -198,15 +102,14 @@ function BusView({ data }) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// CAB VIEW — comparison cards
+// CAB VIEW
 // ════════════════════════════════════════════════════════════════════════════
 function CabView({ data }) {
   const [distanceKm, setDistanceKm] = useState(5);
   const distances = [3, 5, 8, 10, 15];
 
-  // Calculate fare for given distance
   const calcFare = (cab, km) =>
-    Math.round(cab.base_fare + cab.per_km_rate * km);
+    Math.round((cab.base_fare || 0) + (cab.per_km_rate || 0) * km);
 
   const sorted = [...data].sort((a, b) => calcFare(a, distanceKm) - calcFare(b, distanceKm));
 
@@ -218,7 +121,6 @@ function CabView({ data }) {
 
   return (
     <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}>
-      {/* Distance selector */}
       <View className="mb-4">
         <Text className="text-sm font-semibold text-gray-600 mb-2">Estimate for distance:</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -265,16 +167,14 @@ function CabView({ data }) {
               </View>
             </View>
 
-            {/* Features */}
             <View className="flex-row flex-wrap gap-1 mt-2">
-              {item.features.map(f => (
+              {(item.features || []).map(f => (
                 <View key={f} className="bg-white px-2 py-0.5 rounded-full border border-gray-200">
                   <Text className="text-xs text-gray-600">{f}</Text>
                 </View>
               ))}
             </View>
 
-            {/* Book button */}
             <TouchableOpacity
               className="mt-3 bg-white border border-gray-300 rounded-xl py-2 items-center"
               onPress={() => openURL(item.book_url)}
@@ -284,13 +184,6 @@ function CabView({ data }) {
           </View>
         );
       })}
-
-      <View className="bg-blue-50 rounded-xl p-3 mt-2">
-        <Text className="text-xs text-blue-600 font-medium">💡 Local Tip</Text>
-        <Text className="text-xs text-blue-500 mt-1">
-          Fares may vary with surge pricing. UberGo and Ola Mini are usually the cheapest options for distances under 8 km in Jaipur.
-        </Text>
-      </View>
     </ScrollView>
   );
 }
@@ -349,13 +242,13 @@ function RickshawView({ data }) {
 // BIKE RENTALS VIEW
 // ════════════════════════════════════════════════════════════════════════════
 function BikeRentalsView({ data }) {
-  const [filter, setFilter] = useState("all"); // "all" | "available" | "no-license"
+  const [filter, setFilter] = useState("all");
 
   const filtered = data.filter(b => {
     if (filter === "available") return b.available === true;
     if (filter === "no-license") return b.license_required === false;
     return true;
-  }).sort((a, b) => a.price_per_day - b.price_per_day);
+  }).sort((a, b) => (a.price_per_day || 0) - (b.price_per_day || 0));
 
   return (
     <>
@@ -401,7 +294,6 @@ function BikeRentalsView({ data }) {
 
             <View className="flex-row flex-wrap gap-1 mt-2 mb-2">
               {[
-                item.ac ? "AC" : null,
                 item.helmet_included ? "Helmet ✓" : "No Helmet",
                 item.license_required ? "License Required" : "No License Needed",
                 item.fuel_included ? "Fuel ✓" : "Fuel Extra",
@@ -413,7 +305,7 @@ function BikeRentalsView({ data }) {
             </View>
 
             <Text className="text-xs text-gray-500 mb-1">
-              📍 Pickup: {item.pickup_locations.join(", ")}
+              📍 Pickup: {(item.pickup_locations || []).join(", ")}
             </Text>
             <Text className="text-xs text-gray-500 mb-1">
               💰 Deposit: {item.deposit === 0 ? "No deposit" : `₹${item.deposit}`} · Min age: {item.min_age}+
@@ -450,28 +342,63 @@ const TYPE_CONFIG = {
 
 export default function TransportTypePage() {
   const { type } = useLocalSearchParams();
-  const data = transportationData[type] || [];
-  const config = TYPE_CONFIG[type] || { title: type, subtitle: "Available services", emoji: "🚗" };
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const config = TYPE_CONFIG[type] || {
+    title: type,
+    subtitle: "Available services",
+    emoji: "🚗"
+  };
+
+  const fetchTransportData = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${BASE_URL}/api/admin/data/transportation/${type}`);
+      const json = await response.json();
+
+      setData(json || []);
+    } catch (error) {
+      console.error("TRANSPORT FETCH ERROR:", error);
+      Alert.alert("Error", "Could not load transport data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (type) {
+      fetchTransportData();
+    }
+  }, [type]);
 
   return (
     <SafeAreaView className="flex-1 bg-[#f4f6fb]">
-      {/* Header */}
       <View className="px-5 pt-4 pb-4">
         <Text className="text-3xl">{config.emoji}</Text>
         <Text className="text-2xl font-bold text-[#0b3d91] mt-1">{config.title}</Text>
         <Text className="text-sm text-gray-500 mt-0.5">{config.subtitle}</Text>
       </View>
 
-      {/* Render correct view per type */}
-      {type === "bus" && <BusView data={data} />}
-      {type === "cab" && <CabView data={data} />}
-      {type === "rickshaw" && <RickshawView data={data} />}
-      {type === "bikeRentals" && <BikeRentalsView data={data} />}
-
-      {data.length === 0 && (
+      {loading ? (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-400 text-lg">No data available 😕</Text>
+          <ActivityIndicator size="large" color="#218fb4" />
+          <Text className="mt-3 text-gray-500">Loading transport data...</Text>
         </View>
+      ) : (
+        <>
+          {type === "bus" && <BusView data={data} />}
+          {type === "cab" && <CabView data={data} />}
+          {type === "rickshaw" && <RickshawView data={data} />}
+          {type === "bikeRentals" && <BikeRentalsView data={data} />}
+
+          {data.length === 0 && (
+            <View className="flex-1 items-center justify-center">
+              <Text className="text-gray-400 text-lg">No data available 😕</Text>
+            </View>
+          )}
+        </>
       )}
     </SafeAreaView>
   );

@@ -4,9 +4,10 @@ import User from "../models/User.js";
 
 import { signup, signin } from "../controllers/authController.js";
 import { changePassword, deleteAccount } from "../controllers/authController.js";
+import { getAllUsers } from "../controllers/authController.js";
 
 const router = express.Router();
-
+router.get("/users", getAllUsers);
 router.post("/signup", signup);
 router.post("/signin", signin);
 

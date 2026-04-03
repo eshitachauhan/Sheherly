@@ -1,57 +1,115 @@
 import { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  StatusBar,
+  Alert,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const BASE_URL = "http://10.231.186.250:9000";
+const BASE_URL = "http://10.231.186.139:8000"; // 🔥 replace with your signin/signup backend IP
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const getUsers = async () => {
+  const fetchUsers = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/admin/users`);
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+      setLoading(true);
 
-  const deleteUser = async (id) => {
-    try {
-      await fetch(`${BASE_URL}/api/admin/user/${id}`, {
-        method: "DELETE",
-      });
-      getUsers();
-    } catch (err) {
-      console.log(err);
+      const response = await fetch(`${BASE_URL}/api/auth/users`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert("Error", data.message || "Failed to fetch users");
+        return;
+      }
+
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error("FETCH USERS ERROR:", error);
+      Alert.alert("Error", "Could not load users");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUsers();
+    fetchUsers();
   }, []);
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f7fa" }}>
+      <StatusBar barStyle="dark-content" />
 
-      <Text style={{ fontSize: 20, marginBottom: 10 }}>
-        Users List
-      </Text>
+      <View style={{ padding: 20 }}>
+        <Text style={{ fontSize: 26, fontWeight: "700", color: "#222" }}>
+          Manage Users
+        </Text>
+        <Text style={{ marginTop: 5, color: "#666", fontSize: 15 }}>
+          Total Registered Users: {users.length}
+        </Text>
+      </View>
 
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 15 }}>
-            <Text>{item.email}</Text>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#218fb4" />
+          <Text style={{ marginTop: 10, color: "#555" }}>Loading users...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={users}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={{ paddingHorizontal: 15, paddingBottom: 20 }}
+          renderItem={({ item, index }) => (
+            <View
+              style={{
+                backgroundColor: "white",
+                padding: 16,
+                borderRadius: 14,
+                marginBottom: 12,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "600", color: "#222" }}>
+                {index + 1}. {item.email}
+              </Text>
 
-            <TouchableOpacity onPress={() => deleteUser(item._id)}>
-              <Text style={{ color: "red" }}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+              <Text style={{ marginTop: 6, color: "#666" }}>
+                User ID: {item._id}
+              </Text>
 
-    </View>
+              <View
+                style={{
+                  marginTop: 10,
+                  alignSelf: "flex-start",
+                  backgroundColor:
+                    item.role === "admin" ? "#ffe0b2" : "#dcedc8",
+                  paddingVertical: 5,
+                  paddingHorizontal: 12,
+                  borderRadius: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    color: item.role === "admin" ? "#e65100" : "#2e7d32",
+                  }}
+                >
+                  {item.role.toUpperCase()}
+                </Text>
+              </View>
+            </View>
+          )}
+          ListEmptyComponent={
+            <Text style={{ textAlign: "center", marginTop: 40, color: "#777" }}>
+              No users found
+            </Text>
+          }
+        />
+      )}
+    </SafeAreaView>
   );
 }
