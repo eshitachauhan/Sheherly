@@ -142,7 +142,7 @@ export default function Home() {
               </View>
               <Text className="text-xs font-medium mt-1 text-slate-600">Pharmacies</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/medical/diagnostic-labs")}>
+            <TouchableOpacity className="items-center" onPress={() => router.push("/category/medical/labs")}>
               <View className="w-14 h-14 bg-rose-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🧪</Text>
               </View>
