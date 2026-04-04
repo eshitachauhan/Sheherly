@@ -16,7 +16,7 @@
       "brand": "AU Bank",
       "amenity": "bank",
       "lat": 26.9232,
-      "lon": 75.8270,
+      "lon": 75.827,
       "address": "Barathi Bhawan, MSB Ka Rasta, Johari Bazaar, Jaipur",
       "opening_hours": "10:00-17:00"
     },
@@ -25,8 +25,8 @@
       "name": "ICICI Bank ATM",
       "brand": "ICICI",
       "amenity": "atm",
-      "lat": 26.9180,
-      "lon": 75.8240,
+      "lat": 26.918,
+      "lon": 75.824,
       "address": "Bapu Bazaar, Jaipur",
       "opening_hours": "24/7"
     },
@@ -35,13 +35,16 @@
       "name": "SBI ATM",
       "brand": "SBI",
       "amenity": "atm",
-      "lat": 26.9150,
+      "lat": 26.915,
       "lon": 75.8185,
       "address": "Malviya Nagar, Jaipur",
       "opening_hours": "24/7"
+    },
+    {
+      "name": "Yudd",
+      "id": "1775290828364"
     }
   ],
-
   "groceries": [
     {
       "store_id": "g1",
@@ -71,7 +74,7 @@
       "type": "Local Store",
       "area": "Tonk Road",
       "lat": 26.8505,
-      "lng": 75.8050,
+      "lng": 75.805,
       "opening_hours": "07:00-23:00",
       "delivery": true,
       "address": "Tonk Road, Jaipur"
@@ -81,14 +84,13 @@
       "name": "Easyday Club",
       "type": "Supermarket",
       "area": "Malviya Nagar",
-      "lat": 26.8460,
-      "lng": 75.8130,
+      "lat": 26.846,
+      "lng": 75.813,
       "opening_hours": "09:00-22:30",
       "delivery": true,
       "address": "Malviya Nagar, Jaipur"
     }
   ],
-
   "local-markets": [
     {
       "market_id": "m1",
@@ -115,7 +117,7 @@
       "name": "Tripolia Bazaar",
       "type": "Lac Bangles & Brassware",
       "area": "Old City",
-      "lat": 26.9250,
+      "lat": 26.925,
       "lng": 75.8255,
       "opening_hours": "10:30-20:00",
       "address": "Tripolia Bazaar, Jaipur"
@@ -126,12 +128,11 @@
       "type": "Handicrafts & Marble",
       "area": "Chandpole",
       "lat": 26.9258,
-      "lng": 75.8120,
+      "lng": 75.812,
       "opening_hours": "10:00-20:00",
       "address": "Chandpole Gate, Jaipur"
     }
   ],
-
   "house-services": [
     {
       "id": "hs1",
@@ -148,8 +149,8 @@
       "name": "Jaipur Electric Services",
       "type": "Electrician",
       "area": "Malviya Nagar",
-      "lat": 26.8500,
-      "lng": 75.8100,
+      "lat": 26.85,
+      "lng": 75.81,
       "opening_hours": "09:00-19:00",
       "phone": "9123456780"
     },
@@ -158,8 +159,8 @@
       "name": "QuickFix Plumbers",
       "type": "Plumbing",
       "area": "Vaishali Nagar",
-      "lat": 26.9000,
-      "lng": 75.7500,
+      "lat": 26.9,
+      "lng": 75.75,
       "opening_hours": "24/7",
       "phone": "9988776655"
     },
@@ -169,7 +170,7 @@
       "type": "Deep Cleaning",
       "area": "Mansarovar",
       "lat": 26.8502,
-      "lng": 75.7680,
+      "lng": 75.768,
       "opening_hours": "08:00-18:00",
       "phone": "9876543211"
     }
