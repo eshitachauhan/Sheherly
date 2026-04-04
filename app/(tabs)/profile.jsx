@@ -10,7 +10,6 @@ const BASE_URL = "http://10.231.186.139:8000";
 const settingsOptions = [
   { id: "1", title: "Edit Profile", emoji: "✏️", route: "edit" },
   { id: "2", title: "Change Password", emoji: "🔒", route: "change-password" },
-  { id: "3", title: "Notifications", emoji: "🔔", route: "notifications" },
   { id: "4", title: "Delete Account", emoji: "🗑️", route: "delete-account" },
   { id: "5", title: "Logout", emoji: "🚪", route: "logout", danger: true },
 ];

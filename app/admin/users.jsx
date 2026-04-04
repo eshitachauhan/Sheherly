@@ -74,12 +74,23 @@ export default function Users() {
               }}
             >
               <Text style={{ fontSize: 16, fontWeight: "600", color: "#222" }}>
-                {index + 1}. {item.email}
-              </Text>
+  {index + 1}. {item.email}
+</Text>
 
-              <Text style={{ marginTop: 6, color: "#666" }}>
-                User ID: {item._id}
-              </Text>
+{/* 👤 Name */}
+<Text style={{ marginTop: 6, color: "#555" }}>
+  Name: {item.name && item.name.trim() !== "" ? item.name : "N/A"}
+</Text>
+
+{/* 📞 Phone */}
+<Text style={{ marginTop: 4, color: "#555" }}>
+  Phone: {item.phone && item.phone.trim() !== "" ? item.phone : "N/A"}
+</Text>
+
+{/* 🆔 ID */}
+<Text style={{ marginTop: 6, color: "#888", fontSize: 12 }}>
+  ID: {item._id}
+</Text>
 
               <View
                 style={{

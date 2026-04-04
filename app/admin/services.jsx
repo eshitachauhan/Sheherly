@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   View,
- Text,
+  Text,
   FlatList,
   TouchableOpacity,
   TextInput,
@@ -9,6 +9,10 @@ import {
   Modal,
   ScrollView,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,6 +28,60 @@ const categories = {
   safety: null,
 };
 
+
+const fieldConfig = {
+  food: {
+    restaurants: ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
+    "street-food": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
+    "chill-cafes": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
+    "night-cafes": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],  
+  },
+
+  medical: {
+    hospitals: ["id", "name", "address", "lat", "lng", "phone", "timings"],
+    pharmacies: ["id", "name", "address", "lat", "lng", "phone", "timings"],
+    clinics: ["id", "name", "address", "lat", "lng", "phone", "timings"],
+    labs: ["id", "name", "address", "lat", "lng", "phone", "timings"],
+  },
+
+  transportation: {
+    bus: ["name", "route", "fare", "timings"],
+    cab: ["name", "phone", "location"],
+    rickshaw: ["name", "phone", "location"],
+    bikeRentals: ["name", "phone", "location", "price"],
+  },
+
+  local: {
+    finance: ["id", "name", "brand", "amenity", "lat", "lon", "address", "opening_hours"],
+    groceries: ["store_id", "name", "type", "area", "lat", "lng", "opening_hours", "delivery", "address"],
+    "local-markets": ["market_id", "name", "type", "area", "lat", "lng", "opening_hours", "address"],
+    "house-services": ["id", "name", "type", "area", "lat", "lng", "opening_hours", "phone"],
+  },
+
+  accommodation: {
+    hotels: ["id", "name", "lat", "lng", "location", "rating", "reviews", "platforms"],
+    hostels: ["id", "name", "lat", "lng", "location", "rating", "reviews", "platforms"],
+    pg: ["id", "name", "lat", "lng", "location", "rating", "reviews", "phone"],
+    homestays: ["id", "name", "lat", "lng", "location", "rating", "reviews", "platforms"],
+    resorts: ["id", "name", "lat", "lng", "location", "rating", "reviews", "platforms"],
+  },
+
+  famous: {
+    "park-gardens": ["id", "name", "lat", "lng", "address", "timings"],
+    "historic-monuments": ["id", "name", "lat", "lng", "address", "timings"],
+    "art-galleries": ["id", "name", "lat", "lng", "address", "timings"],
+    "shopping-malls": ["id", "name", "lat", "lng", "address", "timings"],
+    "local-markets": ["id", "name", "lat", "lng", "address", "timings"],
+    "water-parks": ["id", "name", "lat", "lng", "address", "timings"],
+    "religious-places": ["id", "name", "lat", "lng", "address", "timings"],
+    "view-points": ["id", "name", "lat", "lng", "address", "timings"],
+  },
+
+  safety: {
+    default: ["name", "address", "lat", "lng"],
+  },
+};
+
 export default function Services() {
   const [category, setCategory] = useState("food");
   const [type, setType] = useState("restaurants");
@@ -31,7 +89,21 @@ export default function Services() {
   const [loading, setLoading] = useState(false);
 
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newItemName, setNewItemName] = useState("");
+  const [formData, setFormData] = useState({});
+
+  // When category changes, auto-pick first subtype if needed
+  useEffect(() => {
+    if (category === "safety") {
+      setType(null);
+    } else {
+      setType(categories[category]?.[0] || null);
+    }
+  }, [category]);
+
+  // Fetch whenever category/type changes
+  useEffect(() => {
+    fetchData();
+  }, [category, type]);
 
   const fetchData = async () => {
     try {
@@ -58,28 +130,29 @@ export default function Services() {
     }
   };
 
-  useEffect(() => {
-    if (category === "safety") {
-      setType(null);
-    } else {
-      setType(categories[category]?.[0] || null);
-    }
-  }, [category]);
-
-  useEffect(() => {
-    fetchData();
-  }, [category, type]);
-
   const handleAdd = async () => {
-    if (!newItemName.trim()) {
-      Alert.alert("Error", "Please enter a name");
+    if (!formData.name?.trim()) {
+      Alert.alert("Error", "Name is required");
       return;
     }
 
     const item = {
+      ...formData,
       id: Date.now().toString(),
-      name: newItemName,
     };
+
+    // Convert numeric-ish fields where useful
+    if (item.rating) item.rating = Number(item.rating);
+    if (item.lat) item.lat = Number(item.lat);
+    if (item.lng) item.lng = Number(item.lng);
+    if (item.fare) item.fare = Number(item.fare);
+
+    // Remove empty keys
+    Object.keys(item).forEach((key) => {
+      if (item[key] === "" || item[key] === undefined || item[key] === null) {
+        delete item[key];
+      }
+    });
 
     try {
       const url = type
@@ -101,7 +174,7 @@ export default function Services() {
         return;
       }
 
-      setNewItemName("");
+      setFormData({});
       setShowAddModal(false);
       fetchData();
     } catch (err) {
@@ -134,6 +207,7 @@ export default function Services() {
     }
   };
 
+  // Fix blank cards by using fallback keys
   const getDisplayName = (item) => {
     return (
       item.name ||
@@ -143,6 +217,7 @@ export default function Services() {
       item.service ||
       item.category ||
       item.address ||
+      item["name:en"] ||
       "Unnamed Item"
     );
   };
@@ -278,23 +353,52 @@ export default function Services() {
       />
 
       {/* Add Modal */}
-      <Modal visible={showAddModal} animationType="slide" transparent>
-        <View className="flex-1 bg-black/30 justify-end">
-          <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10">
-            <Text className="text-2xl font-bold text-gray-900 mb-5">
-              Add New Item
-            </Text>
+      {/* Add Modal */}
+<Modal visible={showAddModal} animationType="slide" transparent>
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View className="flex-1 bg-black/30 justify-end">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "android" ? "height" : "padding"}
+        keyboardVerticalOffset={20}
+      >
+        <View
+          className="bg-white rounded-t-3xl px-6 pb-10"
+          style={{
+            maxHeight: "88%",
+            paddingTop: 28, // 🔥 pushes content slightly downward
+          }}
+        >
+          <Text className="text-2xl font-bold text-gray-900 mb-5">
+            Add {category}
+          </Text>
 
-            <TextInput
-              placeholder="Enter item name"
-              value={newItemName}
-              onChangeText={setNewItemName}
-              className="border border-gray-300 rounded-2xl px-4 py-4 text-base bg-[#f8f9fc]"
-            />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 30 }}
+          >
+            {(fieldConfig[category]?.[type] ||
+              fieldConfig[category]?.default ||
+              []).map((field) => (
+              <TextInput
+                key={field}
+                placeholder={field}
+                placeholderTextColor="#777"
+                value={formData[field] || ""}
+                onChangeText={(text) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    [field]: text,
+                  }))
+                }
+                className="border border-gray-300 rounded-2xl px-4 py-4 text-base bg-[#f8f9fc] mb-3"
+                style={{ minHeight: 58 }}
+              />
+            ))}
 
             <TouchableOpacity
               onPress={handleAdd}
-              className="bg-[#218fb4] py-4 rounded-2xl mt-5"
+              className="bg-[#218fb4] py-4 rounded-2xl mt-3"
             >
               <Text className="text-white text-center text-lg font-semibold">
                 Save Item
@@ -304,7 +408,7 @@ export default function Services() {
             <TouchableOpacity
               onPress={() => {
                 setShowAddModal(false);
-                setNewItemName("");
+                setFormData({});
               }}
               className="py-4 rounded-2xl mt-3 bg-[#eef1f6]"
             >
@@ -312,9 +416,12 @@ export default function Services() {
                 Cancel
               </Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
-      </Modal>
+      </KeyboardAvoidingView>
+    </View>
+  </TouchableWithoutFeedback>
+</Modal>
     </SafeAreaView>
   );
 }
