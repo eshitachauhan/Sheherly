@@ -21,7 +21,7 @@ export default function Index() {
       router.replace("/home");
     } catch (error) {
       console.log("Guest login error:", error);
-      router.replace("/home");
+      router.push("/home");
     }
   };
 
@@ -35,7 +35,7 @@ export default function Index() {
 
           <View className="w-3/4">
             <TouchableOpacity
-              onPress={() => router.replace("/signup")}
+              onPress={() => router.push("/signup")}
               className="p-2 my-2 bg-[#218fb4ff] rounded-lg"
             >
               <Text className="text-lg font-semibold text-center text-white">
@@ -56,7 +56,7 @@ export default function Index() {
           <View>
             <TouchableOpacity
               className="p-2 flex flex-row justify-center items-center"
-              onPress={() => router.replace("/signin")}
+              onPress={() => router.push("/signin")}
             >
               <Text className="font-semibold">Already a User?</Text>
               <Text className="text-base font-semibold text-center text-[#218fb4ff]">

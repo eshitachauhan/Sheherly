@@ -4,7 +4,7 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-const BASE_URL = "http://10.231.186.139:8000";
+const BASE_URL = "http://10.231.186.250:8000";
 
 export default function ChangePassword() {
   const router = useRouter();

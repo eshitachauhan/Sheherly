@@ -9,7 +9,7 @@ export default function Logout() {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("token");
-      router.replace("/signin");
+      router.replace("/");
     } catch (error) {
       console.log("Logout error:", error);
     }

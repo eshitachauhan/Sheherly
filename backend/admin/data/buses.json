@@ -1,0 +1,29 @@
+[
+  { "name": "RSRTC", "serviceNumber": "156990", "from": "Jaipur", "to": "Delhi", "departure": "04:05", "arrival": "10:05", "duration": "6h", "price": 319, "seatsLeft": 46, "type": "non-ac" },
+  { "name": "RSRTC", "serviceNumber": "192299", "from": "Jaipur", "to": "Delhi", "departure": "06:00", "arrival": "11:00", "duration": "5h", "price": 790, "seatsLeft": 35, "type": "ac" },
+  { "name": "RSRTC", "serviceNumber": "155769", "from": "Jaipur", "to": "Delhi", "departure": "06:43", "arrival": "12:40", "duration": "6h", "price": 319, "seatsLeft": 42, "type": "non-ac" },
+  { "name": "RSRTC", "serviceNumber": "154232", "from": "Jaipur", "to": "Delhi", "departure": "06:54", "arrival": "12:50", "duration": "6h", "price": 319, "seatsLeft": 41, "type": "non-ac" },
+
+  { "name": "RSRTC", "serviceNumber": "207831", "from": "Jaipur", "to": "Ajmer", "departure": "02:00", "arrival": "04:35", "duration": "2h 35m", "price": 267, "seatsLeft": 35, "type": "non-ac" },
+  { "name": "RSRTC", "serviceNumber": "207899", "from": "Jaipur", "to": "Ajmer", "departure": "07:15", "arrival": "10:45", "duration": "3h 30m", "price": 167, "seatsLeft": 42, "type": "non-ac" },
+  { "name": "RSRTC", "serviceNumber": "178909", "from": "Jaipur", "to": "Ajmer", "departure": "02:25", "arrival": "05:00", "duration": "2h 35m", "price": 237, "seatsLeft": 31, "type": "non-ac" },
+  { "name": "RSRTC", "serviceNumber": "191025", "from": "Jaipur", "to": "Ajmer", "departure": "03:30", "arrival": "06:10", "duration": "2h 40m", "price": 167, "seatsLeft": 42, "type": "non-ac" },
+
+  { "name": "RSRTC", "serviceNumber": "201746", "from": "Jaipur", "to": "Udaipur", "departure": "11:00", "arrival": "19:30", "duration": "8h 30m", "price": 885, "seatsLeft": 32, "type": "ac" },
+  { "name": "RSRTC", "serviceNumber": "206763", "from": "Jaipur", "to": "Udaipur", "departure": "15:01", "arrival": "23:00", "duration": "7h 59m", "price": 831, "seatsLeft": 32, "type": "ac" },
+
+  { "name": "Rahi Travels", "serviceNumber": "R001", "from": "Jaipur", "to": "Delhi", "departure": "11:50", "arrival": "16:55", "duration": "5h", "price": 269, "seatsLeft": 36, "type": "ac" },
+  { "name": "RC Travels", "serviceNumber": "R002", "from": "Jaipur", "to": "Delhi", "departure": "12:05", "arrival": "17:55", "duration": "5h 50m", "price": 320, "seatsLeft": 59, "type": "ac" },
+  { "name": "Keshav Travels", "serviceNumber": "R003", "from": "Jaipur", "to": "Delhi", "departure": "23:45", "arrival": "05:30", "duration": "5h 45m", "price": 269, "seatsLeft": 53, "type": "ac" },
+
+  { "name": "Golden Deluxe", "serviceNumber": "R004", "from": "Jaipur", "to": "Delhi", "departure": "20:00", "arrival": "01:30", "duration": "5h 30m", "price": 315, "seatsLeft": 27, "type": "ac" },
+  { "name": "Golden Deluxe", "serviceNumber": "R005", "from": "Jaipur", "to": "Delhi", "departure": "07:00", "arrival": "12:30", "duration": "5h 30m", "price": 378, "seatsLeft": 28, "type": "ac" },
+
+  { "name": "Zingbus Plus", "serviceNumber": "Z001", "from": "Jaipur", "to": "Udaipur", "departure": "22:40", "arrival": "05:40", "duration": "7h", "price": 486, "seatsLeft": 30, "type": "ac" },
+  { "name": "Jain Travels", "serviceNumber": "Z002", "from": "Jaipur", "to": "Udaipur", "departure": "17:30", "arrival": "02:00", "duration": "8h 30m", "price": 849, "seatsLeft": 32, "type": "ac" },
+
+  { "name": "Thar Travels", "serviceNumber": "Z003", "from": "Jaipur", "to": "Udaipur", "departure": "22:30", "arrival": "06:00", "duration": "7h 30m", "price": 550, "seatsLeft": 17, "type": "ac" },
+  { "name": "Rishabh Travels", "serviceNumber": "Z004", "from": "Jaipur", "to": "Udaipur", "departure": "22:15", "arrival": "06:35", "duration": "8h 20m", "price": 650, "seatsLeft": 33, "type": "ac" },
+
+  { "name": "Global Travels", "serviceNumber": "Z005", "from": "Jaipur", "to": "Udaipur", "departure": "15:30", "arrival": "00:00", "duration": "8h 30m", "price": 670, "seatsLeft": 40, "type": "non-ac" }
+]

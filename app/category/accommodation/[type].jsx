@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 
-const BASE_URL = "http://10.231.186.139:9000"; // admin backend
+const BASE_URL = "http://10.231.186.250:9000"; // admin backend
 
 export default function AccommodationTypePage() {
   const { type } = useLocalSearchParams();

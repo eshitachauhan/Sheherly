@@ -38,13 +38,13 @@ export default function TransportationPage() {
   const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const filteredData = transportOptions.filter(item =>
+  const filteredData = transportOptions.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <SafeAreaView className="flex-1 bg-[#f4f6fb]">
-      
+      {/* Header */}
       <View className="p-6">
         <Text className="text-3xl font-bold text-[#0b3d91]">
           Transportation
@@ -56,13 +56,28 @@ export default function TransportationPage() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="px-4">
-          {filteredData.map(item => (
+          {/* Search bar */}
+          <TextInput
+            placeholder="Search transport..."
+            value={search}
+            onChangeText={setSearch}
+            className="bg-white p-3 rounded-xl mb-4"
+          />
+
+          {/* Transport Cards */}
+          {filteredData.map((item) => (
             <TouchableOpacity
               key={item.id}
               activeOpacity={0.85}
+
+              // ✅ IMPORTANT FIX
               onPress={() =>
-                router.push(`/category/transportation/${item.slug}`)
+                router.push({
+                  pathname: "/category/transportation/search",
+                  params: { type: item.slug },
+                })
               }
+
               className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow"
             >
               <Text className="text-4xl mr-4">{item.emoji}</Text>
@@ -78,13 +93,13 @@ export default function TransportationPage() {
             </TouchableOpacity>
           ))}
 
+          {/* No results */}
           {filteredData.length === 0 && (
             <Text className="text-center text-gray-500 mt-10">
               No transport found 😬
             </Text>
           )}
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );

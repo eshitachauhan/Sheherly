@@ -1,9 +1,16 @@
 import express from "express";
 import cors from "cors";
+
+console.log("1. Starting index.js...");
+
 import { getRoute } from "./routeService.js";
+console.log("2. routeService imported successfully");
+
 import { searchPlace } from "./geocodingService.js";
+console.log("3. geocodingService imported successfully");
 
 const app = express();
+console.log("4. Express app created");
 
 app.use(cors());
 app.use(express.json());
@@ -69,6 +76,19 @@ app.post("/api/route", async (req, res) => {
 });
 
 const PORT = 8000;
+
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`5. Server running on port ${PORT}`);
+});
+
+process.on("exit", (code) => {
+  console.log("❌ Process exiting with code:", code);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("❌ Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("❌ Unhandled Rejection:", reason);
 });

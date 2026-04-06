@@ -1,0 +1,502 @@
+[
+  {
+    "driver_id": "DRV001",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9054063625",
+    "vehicle_id": "ERK0001",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV002",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9651587946",
+    "vehicle_id": "ERK0002",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Bapu Nagar",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV003",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9442987886",
+    "vehicle_id": "ERK0003",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Malviya Nagar",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV004",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9390406868",
+    "vehicle_id": "ERK0004",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV005",
+    "driver_name": "Ravi Sharma",
+    "contact_number": "+91-9394570534",
+    "vehicle_id": "ERK0005",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Jawahar Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV006",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9474322457",
+    "vehicle_id": "ERK0006",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV007",
+    "driver_name": "Ravi Sharma",
+    "contact_number": "+91-9896448315",
+    "vehicle_id": "ERK0007",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Vaishali Nagar",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV008",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9289662892",
+    "vehicle_id": "ERK0008",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Vaishali Nagar",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV009",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9707788306",
+    "vehicle_id": "ERK0009",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Malviya Nagar",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV010",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9756875873",
+    "vehicle_id": "ERK0010",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Bapu Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV011",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9131086867",
+    "vehicle_id": "ERK0011",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Civil Lines",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV012",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9350415209",
+    "vehicle_id": "ERK0012",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV013",
+    "driver_name": "Mohan Singh",
+    "contact_number": "+91-9887641683",
+    "vehicle_id": "ERK0013",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV014",
+    "driver_name": "Rajesh Kumar",
+    "contact_number": "+91-9719664054",
+    "vehicle_id": "ERK0014",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Jawahar Nagar",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV015",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9441015154",
+    "vehicle_id": "ERK0015",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Jawahar Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV016",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9358513400",
+    "vehicle_id": "ERK0016",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Mansarovar",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV017",
+    "driver_name": "Suresh Yadav",
+    "contact_number": "+91-9546157686",
+    "vehicle_id": "ERK0017",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Civil Lines",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV018",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9353612319",
+    "vehicle_id": "ERK0018",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Malviya Nagar",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV019",
+    "driver_name": "Amit Joshi",
+    "contact_number": "+91-9858112950",
+    "vehicle_id": "ERK0019",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Jaipur Central",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV020",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9136027882",
+    "vehicle_id": "ERK0020",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV021",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9698912409",
+    "vehicle_id": "ERK0021",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Jaipur Central",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV022",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9497440614",
+    "vehicle_id": "ERK0022",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Civil Lines",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV023",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9605838502",
+    "vehicle_id": "ERK0023",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Jawahar Nagar",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV024",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9719271269",
+    "vehicle_id": "ERK0024",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Civil Lines",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV025",
+    "driver_name": "Amit Joshi",
+    "contact_number": "+91-9797829648",
+    "vehicle_id": "ERK0025",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Malviya Nagar",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV026",
+    "driver_name": "Mohan Singh",
+    "contact_number": "+91-9960407034",
+    "vehicle_id": "ERK0026",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV027",
+    "driver_name": "Ravi Sharma",
+    "contact_number": "+91-9025544604",
+    "vehicle_id": "ERK0027",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV028",
+    "driver_name": "Rajesh Kumar",
+    "contact_number": "+91-9938543142",
+    "vehicle_id": "ERK0028",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Vaishali Nagar",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV029",
+    "driver_name": "Ravi Sharma",
+    "contact_number": "+91-9945536664",
+    "vehicle_id": "ERK0029",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV030",
+    "driver_name": "Sneha Singh",
+    "contact_number": "+91-9441253278",
+    "vehicle_id": "ERK0030",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Vaishali Nagar",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV031",
+    "driver_name": "Sneha Singh",
+    "contact_number": "+91-9288200574",
+    "vehicle_id": "ERK0031",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Malviya Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV032",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9203404706",
+    "vehicle_id": "ERK0032",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Civil Lines",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV033",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9616166264",
+    "vehicle_id": "ERK0033",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Jaipur Central",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV034",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9813047130",
+    "vehicle_id": "ERK0034",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Mansarovar",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV035",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9001487371",
+    "vehicle_id": "ERK0035",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Civil Lines",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV036",
+    "driver_name": "Geeta Patel",
+    "contact_number": "+91-9683696447",
+    "vehicle_id": "ERK0036",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV037",
+    "driver_name": "Rajesh Kumar",
+    "contact_number": "+91-9814272394",
+    "vehicle_id": "ERK0037",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Jaipur Central",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV038",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9507212475",
+    "vehicle_id": "ERK0038",
+    "vehicle_model": "EcoMotion M10",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV039",
+    "driver_name": "Mohan Singh",
+    "contact_number": "+91-9813525766",
+    "vehicle_id": "ERK0039",
+    "vehicle_model": "ElectricGo E100",
+    "operating_zone": "Vaishali Nagar",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV040",
+    "driver_name": "Ravi Sharma",
+    "contact_number": "+91-9275128927",
+    "vehicle_id": "ERK0040",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Bapu Nagar",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV041",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9384272264",
+    "vehicle_id": "ERK0041",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Jawahar Nagar",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV042",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9936823537",
+    "vehicle_id": "ERK0042",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Vaishali Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV043",
+    "driver_name": "Suresh Yadav",
+    "contact_number": "+91-9282932319",
+    "vehicle_id": "ERK0043",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Bapu Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV044",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9711009091",
+    "vehicle_id": "ERK0044",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Jawahar Nagar",
+    "availability": true,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV045",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9225933395",
+    "vehicle_id": "ERK0045",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Bapu Nagar",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV046",
+    "driver_name": "Sneha Singh",
+    "contact_number": "+91-9629687319",
+    "vehicle_id": "ERK0046",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV047",
+    "driver_name": "Anil Gupta",
+    "contact_number": "+91-9250448857",
+    "vehicle_id": "ERK0047",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Jaipur Central",
+    "availability": false,
+    "service_type": "Goods"
+  },
+  {
+    "driver_id": "DRV048",
+    "driver_name": "Pooja Verma",
+    "contact_number": "+91-9928949303",
+    "vehicle_id": "ERK0048",
+    "vehicle_model": "SaveRide S300",
+    "operating_zone": "Sindhi Camp",
+    "availability": true,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV049",
+    "driver_name": "Mohan Singh",
+    "contact_number": "+91-9752850477",
+    "vehicle_id": "ERK0049",
+    "vehicle_model": "GreenWheels G5",
+    "operating_zone": "Sindhi Camp",
+    "availability": false,
+    "service_type": "Passenger"
+  },
+  {
+    "driver_id": "DRV050",
+    "driver_name": "Sunita Devi",
+    "contact_number": "+91-9839143557",
+    "vehicle_id": "ERK0050",
+    "vehicle_model": "EcoRide X250",
+    "operating_zone": "Vaishali Nagar",
+    "availability": true,
+    "service_type": "Passenger"
+  }
+]

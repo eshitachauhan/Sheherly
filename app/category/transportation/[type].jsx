@@ -1,405 +1,736 @@
+import React, { useEffect, useState } from "react";
 import {
-  View, Text, FlatList, TouchableOpacity,
-  ScrollView, Linking, Alert, ActivityIndicator
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Linking,
+  ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Slider from "@react-native-community/slider";
 import { useLocalSearchParams } from "expo-router";
-import { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebase";
 
-const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
+export default function Result() {
+  const {
+    type,
+    from = "",
+    to = "",
+    service = "Passenger",
+    area = "Area",
+  } = useLocalSearchParams();
 
-// ─── Open external booking URL ───────────────────────────────────────────────
-const openURL = async (url) => {
-  try {
-    await Linking.openURL(url);
-  } catch {
-    Alert.alert("Could not open link", "Please try manually.");
-  }
-};
-
-// ─── Open Google Maps for directions ─────────────────────────────────────────
-const openMaps = (from, to) => {
-  const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)},Jaipur&destination=${encodeURIComponent(to)},Jaipur`;
-  openURL(url);
-};
-
-// ════════════════════════════════════════════════════════════════════════════
-// BUS VIEW
-// ════════════════════════════════════════════════════════════════════════════
-function BusView({ data }) {
+  // 🚌 BUS STATES
+  const [allBuses, setAllBuses] = useState([]);
+  const [buses, setBuses] = useState([]);
+  const [expandedId, setExpandedId] = useState(null);
+  const [showFilter, setShowFilter] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [priceRange, setPriceRange] = useState(1000);
 
-  const filtered = data.filter(b => {
-    if (filter === "ac") return b.ac === true;
-    if (filter === "non-ac") return b.ac === false;
-    return true;
-  }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  // 🚖 RICKSHAW STATES
+  const [allRickshaws, setAllRickshaws] = useState([]);
+  const [rickshaws, setRickshaws] = useState([]);
 
-  return (
-    <>
-      <View className="flex-row px-4 mb-4 gap-2">
-        {["all", "ac", "non-ac"].map(f => (
-          <TouchableOpacity
-            key={f}
-            onPress={() => setFilter(f)}
-            className={`px-4 py-2 rounded-full border ${filter === f ? "bg-blue-600 border-blue-600" : "bg-white border-gray-300"}`}
-          >
-            <Text className={`text-sm font-medium capitalize ${filter === f ? "text-white" : "text-gray-600"}`}>
-              {f === "all" ? "All Buses" : f === "ac" ? "AC Only" : "Non-AC"}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+  // 🛵 BIKE RENTALS
+  const [bikeRentals, setBikeRentals] = useState([]);
 
-      <FlatList
-        data={filtered}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
-        renderItem={({ item }) => (
-          <View className="bg-white rounded-2xl mb-3 shadow p-4">
-            <View className="flex-row justify-between items-start mb-2">
-              <View className="flex-1">
-                <View className="flex-row items-center gap-2">
-                  <View className="bg-blue-100 px-2 py-0.5 rounded">
-                    <Text className="text-blue-700 font-bold text-xs">Route {item.route_number}</Text>
-                  </View>
-                  {item.ac && (
-                    <View className="bg-green-100 px-2 py-0.5 rounded">
-                      <Text className="text-green-700 text-xs font-medium">AC</Text>
-                    </View>
-                  )}
-                </View>
-                <Text className="text-base font-semibold mt-1">{item.name}</Text>
-                <Text className="text-xs text-gray-400 mt-0.5">via {item.via}</Text>
-              </View>
-              <View className="items-end">
-                <Text className="text-lg font-bold text-green-600">₹{item.fare}</Text>
-                <Text className="text-xs text-gray-400">per trip</Text>
-              </View>
-            </View>
-
-            <View className="flex-row mt-2 gap-3">
-              <Text className="text-xs text-gray-500">🕒 {item.duration_minutes} mins</Text>
-              <Text className="text-xs text-gray-500">🔁 {item.frequency}</Text>
-              <Text className="text-xs text-gray-500">⭐ {item.rating}</Text>
-            </View>
-
-            <Text className="text-xs text-gray-400 mt-1">
-              First: {item.first_bus} · Last: {item.last_bus}
-            </Text>
-
-            <TouchableOpacity
-              className="mt-3 bg-blue-50 border border-blue-200 rounded-xl py-2 items-center"
-              onPress={() => openMaps(item.from, item.to)}
-            >
-              <Text className="text-blue-600 font-semibold text-sm">🗺️ View Route on Maps</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </>
-  );
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// CAB VIEW
-// ════════════════════════════════════════════════════════════════════════════
-function CabView({ data }) {
-  const [distanceKm, setDistanceKm] = useState(5);
-  const distances = [3, 5, 8, 10, 15];
-
-  const calcFare = (cab, km) =>
-    Math.round((cab.base_fare || 0) + (cab.per_km_rate || 0) * km);
-
-  const sorted = [...data].sort((a, b) => calcFare(a, distanceKm) - calcFare(b, distanceKm));
-
-  const providerColors = {
-    Ola: { bg: "bg-yellow-50", border: "border-yellow-300", badge: "bg-yellow-400", text: "text-yellow-800" },
-    Uber: { bg: "bg-gray-50", border: "border-gray-300", badge: "bg-gray-800", text: "text-white" },
-    Rapido: { bg: "bg-yellow-50", border: "border-yellow-400", badge: "bg-yellow-500", text: "text-gray-900" },
-  };
-
-  return (
-    <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}>
-      <View className="mb-4">
-        <Text className="text-sm font-semibold text-gray-600 mb-2">Estimate for distance:</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View className="flex-row gap-2">
-            {distances.map(d => (
-              <TouchableOpacity
-                key={d}
-                onPress={() => setDistanceKm(d)}
-                className={`px-4 py-2 rounded-full border ${distanceKm === d ? "bg-blue-600 border-blue-600" : "bg-white border-gray-300"}`}
-              >
-                <Text className={`text-sm font-medium ${distanceKm === d ? "text-white" : "text-gray-600"}`}>
-                  {d} km
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
-
-      <Text className="text-xs text-gray-400 mb-3">Sorted by price for {distanceKm} km · Tap to book</Text>
-
-      {sorted.map((item, index) => {
-        const c = providerColors[item.provider] || providerColors["Ola"];
-        const fare = calcFare(item, distanceKm);
-        return (
-          <View key={item.id} className={`rounded-2xl mb-3 shadow p-4 border ${c.bg} ${c.border}`}>
-            <View className="flex-row justify-between items-start">
-              <View>
-                {index === 0 && (
-                  <View className="bg-green-100 px-2 py-0.5 rounded mb-1 self-start">
-                    <Text className="text-green-700 text-xs font-bold">💸 Cheapest</Text>
-                  </View>
-                )}
-                <View className={`px-2 py-0.5 rounded self-start mb-1 ${c.badge}`}>
-                  <Text className={`text-xs font-bold ${c.text}`}>{item.provider}</Text>
-                </View>
-                <Text className="text-base font-semibold">{item.cab_type}</Text>
-                <Text className="text-xs text-gray-500 mt-0.5">~{item.avg_wait_minutes} min wait · ⭐ {item.rating}</Text>
-              </View>
-              <View className="items-end">
-                <Text className="text-2xl font-bold text-gray-800">₹{fare}</Text>
-                <Text className="text-xs text-gray-400">est. for {distanceKm} km</Text>
-                <Text className="text-xs text-gray-400">₹{item.per_km_rate}/km</Text>
-              </View>
-            </View>
-
-            <View className="flex-row flex-wrap gap-1 mt-2">
-              {(item.features || []).map(f => (
-                <View key={f} className="bg-white px-2 py-0.5 rounded-full border border-gray-200">
-                  <Text className="text-xs text-gray-600">{f}</Text>
-                </View>
-              ))}
-            </View>
-
-            <TouchableOpacity
-              className="mt-3 bg-white border border-gray-300 rounded-xl py-2 items-center"
-              onPress={() => openURL(item.book_url)}
-            >
-              <Text className="text-gray-700 font-semibold text-sm">Book on {item.provider} →</Text>
-            </TouchableOpacity>
-          </View>
-        );
-      })}
-    </ScrollView>
-  );
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// RICKSHAW VIEW
-// ════════════════════════════════════════════════════════════════════════════
-function RickshawView({ data }) {
-  return (
-    <FlatList
-      data={data}
-      keyExtractor={item => item.id}
-      contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
-      renderItem={({ item }) => (
-        <View className="bg-white rounded-2xl mb-3 shadow p-4">
-          <View className="flex-row justify-between items-start mb-2">
-            <Text className="text-base font-semibold flex-1">{item.type}</Text>
-            <View className="bg-yellow-50 px-2 py-0.5 rounded border border-yellow-200">
-              <Text className="text-yellow-700 text-xs font-medium">⭐ {item.rating}</Text>
-            </View>
-          </View>
-
-          <Text className="text-sm text-gray-500 mb-3">{item.description}</Text>
-
-          <View className="bg-gray-50 rounded-xl p-3 mb-3">
-            <Text className="text-xs font-semibold text-gray-600 mb-2">Approximate Fares</Text>
-            <Text className="text-xs text-gray-500 mb-1">🟢 Short (&lt;3 km): {item.typical_short_ride}</Text>
-            <Text className="text-xs text-gray-500 mb-1">🟡 Medium (3–8 km): {item.typical_medium_ride}</Text>
-            <Text className="text-xs text-gray-500">🔴 Long (&gt;8 km): {item.typical_long_ride}</Text>
-          </View>
-
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-xs text-gray-400">🕒 {item.availability}</Text>
-            <Text className="text-xs text-gray-400">Best for: {item.best_for}</Text>
-          </View>
-
-          <View className="bg-amber-50 border border-amber-200 rounded-xl p-2 mb-3">
-            <Text className="text-xs text-amber-700">💡 {item.tip}</Text>
-          </View>
-
-          {item.booking_app !== "Street hail only" && item.booking_app !== "Not available — street hail only" && (
-            <TouchableOpacity
-              className="bg-blue-50 border border-blue-200 rounded-xl py-2 items-center"
-              onPress={() => openURL("https://m.uber.com/")}
-            >
-              <Text className="text-blue-600 font-semibold text-sm">Book via {item.booking_app} →</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
-    />
-  );
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// BIKE RENTALS VIEW
-// ════════════════════════════════════════════════════════════════════════════
-function BikeRentalsView({ data }) {
-  const [filter, setFilter] = useState("all");
-
-  const filtered = data.filter(b => {
-    if (filter === "available") return b.available === true;
-    if (filter === "no-license") return b.license_required === false;
-    return true;
-  }).sort((a, b) => (a.price_per_day || 0) - (b.price_per_day || 0));
-
-  return (
-    <>
-      <View className="flex-row px-4 mb-4 gap-2 flex-wrap">
-        {[
-          { key: "all", label: "All" },
-          { key: "available", label: "Available Now" },
-          { key: "no-license", label: "No License Needed" },
-        ].map(f => (
-          <TouchableOpacity
-            key={f.key}
-            onPress={() => setFilter(f.key)}
-            className={`px-4 py-2 rounded-full border ${filter === f.key ? "bg-blue-600 border-blue-600" : "bg-white border-gray-300"}`}
-          >
-            <Text className={`text-sm font-medium ${filter === f.key ? "text-white" : "text-gray-600"}`}>
-              {f.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <FlatList
-        data={filtered}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
-        renderItem={({ item }) => (
-          <View className={`bg-white rounded-2xl mb-3 shadow p-4 ${!item.available ? "opacity-60" : ""}`}>
-            <View className="flex-row justify-between items-start mb-1">
-              <View className="flex-1">
-                <Text className="text-base font-semibold">{item.name}</Text>
-                <Text className="text-xs text-gray-400">{item.model}</Text>
-              </View>
-              <View className="items-end">
-                {!item.available && (
-                  <View className="bg-red-100 px-2 py-0.5 rounded mb-1">
-                    <Text className="text-red-600 text-xs font-medium">Unavailable</Text>
-                  </View>
-                )}
-                <Text className="text-lg font-bold text-green-600">₹{item.price_per_day}/day</Text>
-                <Text className="text-xs text-gray-400">₹{item.price_per_hour}/hr</Text>
-              </View>
-            </View>
-
-            <View className="flex-row flex-wrap gap-1 mt-2 mb-2">
-              {[
-                item.helmet_included ? "Helmet ✓" : "No Helmet",
-                item.license_required ? "License Required" : "No License Needed",
-                item.fuel_included ? "Fuel ✓" : "Fuel Extra",
-              ].filter(Boolean).map(tag => (
-                <View key={tag} className="bg-gray-100 px-2 py-0.5 rounded-full">
-                  <Text className="text-xs text-gray-600">{tag}</Text>
-                </View>
-              ))}
-            </View>
-
-            <Text className="text-xs text-gray-500 mb-1">
-              📍 Pickup: {(item.pickup_locations || []).join(", ")}
-            </Text>
-            <Text className="text-xs text-gray-500 mb-1">
-              💰 Deposit: {item.deposit === 0 ? "No deposit" : `₹${item.deposit}`} · Min age: {item.min_age}+
-            </Text>
-
-            <View className="bg-amber-50 border border-amber-200 rounded-xl p-2 my-2">
-              <Text className="text-xs text-amber-700">💡 {item.tip}</Text>
-            </View>
-
-            {item.available && (
-              <TouchableOpacity
-                className="bg-blue-600 rounded-xl py-2.5 items-center mt-1"
-                onPress={() => openURL(item.booking_url)}
-              >
-                <Text className="text-white font-bold text-sm">Book on {item.name} →</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-      />
-    </>
-  );
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// MAIN PAGE
-// ════════════════════════════════════════════════════════════════════════════
-const TYPE_CONFIG = {
-  bus: { title: "Bus Routes", subtitle: "RSRTC & city buses in Jaipur", emoji: "🚌" },
-  cab: { title: "Cab Comparison", subtitle: "Compare Ola, Uber & Rapido fares", emoji: "🚕" },
-  rickshaw: { title: "Rickshaw Guide", subtitle: "Auto, E-rickshaw & cycle rickshaws", emoji: "🛺" },
-  bikeRentals: { title: "Bike Rentals", subtitle: "Rent bikes & scooters in Jaipur", emoji: "🏍️" },
-};
-
-export default function TransportTypePage() {
-  const { type } = useLocalSearchParams();
-  const [data, setData] = useState([]);
+  // ⏳ LOADING
   const [loading, setLoading] = useState(true);
 
-  const config = TYPE_CONFIG[type] || {
-    title: type,
-    subtitle: "Available services",
-    emoji: "🚗"
-  };
-
-  const fetchTransportData = async () => {
-    try {
-      setLoading(true);
-
-      const response = await fetch(`${BASE_URL}/api/admin/data/transportation/${type}`);
-      const json = await response.json();
-
-      setData(json || []);
-    } catch (error) {
-      console.error("TRANSPORT FETCH ERROR:", error);
-      Alert.alert("Error", "Could not load transport data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 🔥 FETCH DATA
   useEffect(() => {
-    if (type) {
-      fetchTransportData();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // 🚖 RICKSHAW
+        if (type === "rickshaw") {
+          const snapshot = await getDocs(collection(db, "erickshaws"));
+          const data = snapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+}));
+          setAllRickshaws(data);
+          setLoading(false);
+          return;
+        }
+
+        // 🛵 BIKE RENTALS
+        if (type === "bike-rentals") {
+          const snapshot = await getDocs(collection(db, "bikeRentals"));
+          const data = snapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+}));
+          setBikeRentals(data);
+          setLoading(false);
+          return;
+        }
+
+        // 🚌 BUS
+        const snapshot = await getDocs(collection(db, "buses"));
+        const data = snapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+}));
+
+        const filtered = data.filter(
+          (bus) =>
+            bus.from?.toLowerCase().trim() === from?.toLowerCase().trim() &&
+            bus.to?.toLowerCase().trim() === to?.toLowerCase().trim()
+        );
+
+        setAllBuses(filtered);
+        setBuses(filtered);
+        setLoading(false);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [type, from, to]);
+
+  // 🚌 BUS FILTERS
+  useEffect(() => {
+    if (type === "rickshaw" || type === "bike-rentals") return;
+
+    let updated = [...allBuses];
+
+    if (filter === "ac") {
+      updated = updated.filter((bus) => bus.type?.toLowerCase() === "ac");
+    } else if (filter === "non-ac") {
+      updated = updated.filter((bus) => bus.type?.toLowerCase() === "non-ac");
     }
-  }, [type]);
 
-  return (
-    <SafeAreaView className="flex-1 bg-[#f4f6fb]">
-      <View className="px-5 pt-4 pb-4">
-        <Text className="text-3xl">{config.emoji}</Text>
-        <Text className="text-2xl font-bold text-[#0b3d91] mt-1">{config.title}</Text>
-        <Text className="text-sm text-gray-500 mt-0.5">{config.subtitle}</Text>
-      </View>
+    updated = updated.filter((bus) => Number(bus.price) <= priceRange);
 
-      {loading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#218fb4" />
-          <Text className="mt-3 text-gray-500">Loading transport data...</Text>
+    setBuses(updated);
+  }, [filter, priceRange, allBuses, type]);
+
+  // 🚖 RICKSHAW FILTERS
+  useEffect(() => {
+    if (type !== "rickshaw") return;
+
+    const filtered = allRickshaws.filter(
+      (item) =>
+        item.availability === true &&
+        item.service_type?.toLowerCase() === service?.toLowerCase() &&
+        item.operating_zone?.toLowerCase() === area?.toLowerCase()
+    );
+
+    setRickshaws(filtered);
+  }, [type, allRickshaws, service, area]);
+
+  const getLogo = (name) => {
+    const lower = name?.toLowerCase();
+    if (lower?.includes("rsrtc")) {
+      return "https://upload.wikimedia.org/wikipedia/en/7/7f/RSRTC_Logo.png";
+    }
+    return "https://cdn-icons-png.flaticon.com/512/61/61231.png";
+  };
+
+  const openWebsite = (url) => Linking.openURL(url);
+  const callDriver = (number) => {
+    if (number) Linking.openURL(`tel:${number}`);
+  };
+
+  // =========================================================
+  // 🚖 RICKSHAW LOADING
+  // =========================================================
+  if (type === "rickshaw" && loading) {
+    return (
+      <View className="flex-1 bg-[#F0F4FF] justify-center items-center px-6">
+        <View className="bg-white px-8 py-8 rounded-[28px] items-center shadow-sm">
+          <ActivityIndicator size="large" color="#4F6EF7" />
+          <Text className="mt-5 text-[18px] font-bold text-slate-800">
+            Finding Drivers
+          </Text>
+          <Text className="mt-2 text-slate-500 text-center leading-6">
+            Please wait while we search nearby e-rickshaws for you.
+          </Text>
         </View>
-      ) : (
-        <>
-          {type === "bus" && <BusView data={data} />}
-          {type === "cab" && <CabView data={data} />}
-          {type === "rickshaw" && <RickshawView data={data} />}
-          {type === "bikeRentals" && <BikeRentalsView data={data} />}
+      </View>
+    );
+  }
 
-          {data.length === 0 && (
-            <View className="flex-1 items-center justify-center">
-              <Text className="text-gray-400 text-lg">No data available 😕</Text>
+  // =========================================================
+  // 🛵 BIKE RENTALS LOADING
+  // =========================================================
+  if (type === "bike-rentals" && loading) {
+    return (
+      <View className="flex-1 bg-[#F0F4FF] justify-center items-center px-6">
+        <View className="bg-white px-8 py-8 rounded-[28px] items-center shadow-sm">
+          <ActivityIndicator size="large" color="#4F6EF7" />
+          <Text className="mt-5 text-[18px] font-bold text-slate-800">
+            Finding Bikes
+          </Text>
+          <Text className="mt-2 text-slate-500 text-center leading-6">
+            Please wait while we search bike rentals near your location.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  // =========================================================
+  // 🚌 BUS LOADING
+  // =========================================================
+  if (type !== "rickshaw" && type !== "bike-rentals" && loading) {
+    return (
+      <View className="flex-1 bg-[#F0F4FF] justify-center items-center px-6">
+        <View className="bg-white px-8 py-8 rounded-[28px] items-center shadow-sm">
+          <ActivityIndicator size="large" color="#4F6EF7" />
+          <Text className="mt-5 text-[18px] font-bold text-slate-800">
+            Searching Buses
+          </Text>
+          <Text className="mt-2 text-slate-500 text-center leading-6">
+            Please wait while we find available buses for your route.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  // =========================================================
+  // 🚖 RICKSHAW UI
+  // =========================================================
+  if (type === "rickshaw") {
+    return (
+      <View className="flex-1 bg-[#F0F4FF]">
+        <View
+          className="bg-[#4F6EF7] pt-14 pb-7 px-5 rounded-b-[28px] mb-4"
+          style={{
+            shadowColor: "#4F6EF7",
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.35,
+            shadowRadius: 16,
+            elevation: 10,
+          }}
+        >
+          <Text className="text-[#BFD0FF] text-xs font-semibold tracking-[2px] uppercase mb-1.5">
+            Available E-Rickshaws
+          </Text>
+          <Text className="text-2xl font-extrabold text-white tracking-wide">
+            {service} • {area}
+          </Text>
+        </View>
+
+        <View className="flex-row justify-between items-center px-4 mb-3">
+          <Text className="text-[13px] text-slate-500 font-medium">
+            {rickshaws.length} drivers found
+          </Text>
+        </View>
+
+        <FlatList
+          data={rickshaws}
+          keyExtractor={(item, index) =>
+            item.driver_id?.toString() || index.toString()
+          }
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+          ListEmptyComponent={
+            <View className="items-center mt-20 px-6">
+              <Text className="text-xl font-extrabold text-slate-800 mb-2 text-center">
+                No Drivers Available
+              </Text>
+              <Text className="text-slate-500 text-center leading-6">
+                No e-rickshaw available right now in {area}. Try another nearby
+                area.
+              </Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <View
+              className="bg-white p-[18px] rounded-[20px] mb-3.5"
+              style={{
+                shadowColor: "#94A3B8",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 12,
+                elevation: 5,
+              }}
+            >
+              <View className="flex-row justify-between items-center mb-3.5">
+                <View>
+                  <Text className="font-bold text-[17px] text-slate-800">
+                    {item.driver_name}
+                  </Text>
+                  <Text className="text-[11px] text-slate-400 font-semibold tracking-widest mt-1">
+                    {item.driver_id || "DRIVER"}
+                  </Text>
+                </View>
+
+                <View className="bg-emerald-50 py-1.5 px-3 rounded-xl border border-emerald-200">
+                  <Text className="text-emerald-600 font-extrabold text-sm">
+                    Available
+                  </Text>
+                </View>
+              </View>
+
+              <View className="h-px bg-slate-100 mb-3.5" />
+
+              <View className="gap-2 mb-4">
+                <Text className="text-[14px] text-slate-700 font-medium">
+                  🚖 Vehicle:{" "}
+                  <Text className="font-bold">{item.vehicle_model}</Text>
+                </Text>
+                <Text className="text-[14px] text-slate-700 font-medium">
+                  📍 Area:{" "}
+                  <Text className="font-bold">{item.operating_zone}</Text>
+                </Text>
+                <Text className="text-[14px] text-slate-700 font-medium">
+                  🧾 Type:{" "}
+                  <Text className="font-bold">{item.service_type}</Text>
+                </Text>
+                <Text className="text-[14px] text-slate-700 font-medium">
+                  📞 Contact:{" "}
+                  <Text className="font-bold">{item.contact_number}</Text>
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                className="bg-[#4F6EF7] py-[13px] rounded-2xl items-center"
+                style={{
+                  shadowColor: "#4F6EF7",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
+                onPress={() => callDriver(item.contact_number)}
+              >
+                <Text className="text-white font-bold text-sm tracking-wide">
+                  📞 Call Now
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
-        </>
+        />
+      </View>
+    );
+  }
+
+  // =========================================================
+  // 🛵 BIKE RENTALS UI
+  // =========================================================
+  if (type === "bike-rentals") {
+    return (
+      <View className="flex-1 bg-[#F0F4FF]">
+        <View
+          className="bg-[#4F6EF7] pt-14 pb-7 px-5 rounded-b-[28px] mb-4"
+          style={{
+            shadowColor: "#4F6EF7",
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.35,
+            shadowRadius: 16,
+            elevation: 10,
+          }}
+        >
+          <Text className="text-[#BFD0FF] text-xs font-semibold tracking-[2px] uppercase mb-1.5">
+            Bike Rentals
+          </Text>
+          <Text className="text-2xl font-extrabold text-white tracking-wide">
+            Available Bikes Near You
+          </Text>
+        </View>
+
+        <FlatList
+          data={bikeRentals}
+          keyExtractor={(item, index) =>
+            item.bike_id?.toString() || index.toString()
+          }
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+          ListEmptyComponent={
+            <View className="items-center mt-20 px-6">
+              <Text className="text-xl font-extrabold text-slate-800 mb-2 text-center">
+                No Bikes Available
+              </Text>
+              <Text className="text-slate-500 text-center leading-6">
+                No bike rentals available right now. Try again later.
+              </Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <View
+              className="bg-white rounded-[20px] mb-4 overflow-hidden"
+              style={{
+                shadowColor: "#94A3B8",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 12,
+                elevation: 5,
+              }}
+            >
+              <Image
+                source={{ uri: item.image_url }}
+                style={{ width: "100%", height: 180 }}
+                resizeMode="cover"
+              />
+
+              <View className="p-4">
+                <View className="flex-row justify-between items-center mb-2">
+                  <Text className="text-[18px] font-bold text-slate-800 flex-1">
+                    {item.name}
+                  </Text>
+
+                  <View
+                    className={`px-3 py-1 rounded-full ${
+                      item.available ? "bg-green-100" : "bg-red-100"
+                    }`}
+                  >
+                    <Text
+                      className={`font-bold text-xs ${
+                        item.available ? "text-green-700" : "text-red-600"
+                      }`}
+                    >
+                      {item.available ? "Available" : "Not Available"}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text className="text-slate-500 mb-1">🏍️ {item.type}</Text>
+
+                <Text className="text-slate-700 font-semibold mb-1">
+                  ₹{item.price_per_hour}/hr • ₹{item.price_per_day}/day
+                </Text>
+
+                <Text className="text-slate-600 mb-1">
+                  📍 {item.pickup_location}
+                </Text>
+
+                <Text className="text-slate-600 mb-1">🏪 {item.shop_name}</Text>
+
+                <Text className="text-slate-600 mb-3">
+                  🪖 Helmet:{" "}
+                  {item.specs?.helmet_included ? "Included" : "Not Included"}
+                </Text>
+
+                <View className="flex-row justify-between">
+                  <TouchableOpacity
+                    className="bg-[#4F6EF7] px-4 py-3 rounded-xl flex-1 mr-2 items-center"
+                    onPress={() => Linking.openURL(`tel:${item.phone}`)}
+                  >
+                    <Text className="text-white font-bold">📞 Call</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    className="bg-green-500 px-4 py-3 rounded-xl flex-1 mr-2 items-center"
+                    onPress={() =>
+                      Linking.openURL(`https://wa.me/91${item.whatsapp}`)
+                    }
+                  >
+                    <Text className="text-white font-bold">💬 WhatsApp</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    className="bg-slate-700 px-4 py-3 rounded-xl flex-1 items-center"
+                    onPress={() => Linking.openURL(item.google_maps_link)}
+                  >
+                    <Text className="text-white font-bold">📍 Map</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+        />
+      </View>
+    );
+  }
+
+  // =========================================================
+  // 🚌 BUS UI
+  // =========================================================
+  return (
+    <View className="flex-1 bg-[#F0F4FF]">
+      <View
+        className="bg-[#4F6EF7] pt-14 pb-7 px-5 rounded-b-[32px] mb-4"
+        style={{
+          shadowColor: "#4F6EF7",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.35,
+          shadowRadius: 16,
+          elevation: 10,
+        }}
+      >
+        <Text className="text-[#BFD0FF] text-xs font-semibold tracking-[3px] uppercase mb-3">
+          Available Buses
+        </Text>
+
+        <Text className="text-[22px] font-extrabold text-white tracking-wide">
+          {from} → {to}
+        </Text>
+      </View>
+
+      <View className="flex-row justify-between items-center px-4 mb-4">
+        <Text className="text-[13px] text-slate-500 font-medium">
+          {buses.length} results found
+        </Text>
+
+        <TouchableOpacity
+          className="bg-[#4F6EF7] py-2.5 px-5 rounded-full"
+          style={{
+            shadowColor: "#4F6EF7",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.25,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
+          onPress={() => setShowFilter(true)}
+        >
+          <Text className="text-white font-bold text-[13px] tracking-wide">
+            ⚙️ Filters
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={buses}
+        keyExtractor={(_, i) => i.toString()}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 28 }}
+        ListEmptyComponent={
+          <View className="items-center mt-20 px-6">
+            <Text className="text-xl font-extrabold text-slate-800 mb-2 text-center">
+              No Buses Found
+            </Text>
+            <Text className="text-slate-500 text-center leading-6">
+              Try searching a valid route like Jaipur → Ajmer.
+            </Text>
+          </View>
+        }
+        renderItem={({ item, index }) => {
+          const isOpen = expandedId === index;
+
+          return (
+            <View
+              className="bg-white rounded-[28px] px-4 py-5 mb-5"
+              style={{
+                shadowColor: "#94A3B8",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.12,
+                shadowRadius: 12,
+                elevation: 4,
+              }}
+            >
+              <View className="flex-row justify-between items-start mb-5">
+                <View className="flex-row items-center">
+                  <View className="w-16 h-16 rounded-2xl bg-slate-100 items-center justify-center mr-4">
+                    <Image
+                      source={{ uri: getLogo(item.name) }}
+                      className="w-8 h-8"
+                    />
+                  </View>
+
+                  <View>
+                    <Text className="text-[18px] font-extrabold text-slate-800">
+                      {item.name}
+                    </Text>
+                    <Text className="text-[11px] text-slate-400 font-bold tracking-[3px] uppercase mt-1">
+                      {item.type || "AC"}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="bg-emerald-50 border border-emerald-200 rounded-2xl px-5 py-3">
+                  <Text className="text-emerald-600 font-extrabold text-[18px]">
+                    ₹{item.price}
+                  </Text>
+                </View>
+              </View>
+
+              <View className="flex-row items-center justify-between mb-4">
+                <View className="w-[70px]">
+                  <Text className="text-[17px] font-extrabold text-slate-800">
+                    {item.departure || "07:45"}
+                  </Text>
+                  <Text className="text-[12px] text-slate-400 font-medium mt-1">
+                    {item.from}
+                  </Text>
+                </View>
+
+                <View className="flex-1 items-center px-2">
+                  <View className="flex-row items-center w-full">
+                    <View className="w-3 h-3 rounded-full bg-[#4F6EF7]" />
+                    <View className="flex-1 h-[2px] bg-slate-300" />
+                    <View className="bg-indigo-50 border border-indigo-200 rounded-full px-4 py-2 mx-2">
+                      <Text className="text-[#4F6EF7] font-bold text-[12px]">
+                        {item.duration || "6h"}
+                      </Text>
+                    </View>
+                    <View className="flex-1 h-[2px] bg-slate-300" />
+                    <View className="w-3 h-3 rounded-full bg-[#4F6EF7]" />
+                  </View>
+                </View>
+
+                <View className="w-[70px] items-end">
+                  <Text className="text-[17px] font-extrabold text-slate-800">
+                    {item.arrival || "11:30"}
+                  </Text>
+                  <Text className="text-[12px] text-slate-400 font-medium mt-1">
+                    {item.to}
+                  </Text>
+                </View>
+              </View>
+
+              <View className="flex-row gap-3 mb-5">
+                <View className="bg-slate-50 border border-slate-200 rounded-full px-4 py-2">
+                  <Text className="text-[13px] text-slate-600 font-semibold">
+                    ⭐ {item.rating || 4.2}
+                  </Text>
+                </View>
+
+                <View className="bg-slate-50 border border-slate-200 rounded-full px-4 py-2">
+                  <Text className="text-[13px] text-slate-600 font-semibold">
+                    🪑 {item.seats || 25} seats left
+                  </Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                className="bg-[#4F6EF7] py-5 rounded-[22px] items-center"
+                style={{
+                  shadowColor: "#4F6EF7",
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 10,
+                  elevation: 5,
+                }}
+                onPress={() => setExpandedId(isOpen ? null : index)}
+              >
+                <Text className="text-white font-extrabold text-[16px] tracking-wide">
+                  {isOpen ? "Close ✕" : "Select Seats →"}
+                </Text>
+              </TouchableOpacity>
+
+              {isOpen && (
+                <View className="mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                  <Text className="text-[11px] text-slate-400 font-bold tracking-[2px] uppercase mb-3">
+                    Book via
+                  </Text>
+
+                  <TouchableOpacity
+                    className="flex-row justify-between items-center py-3"
+                    onPress={() =>
+                      openWebsite(
+                        `https://www.redbus.in/search?fromCityName=${item.from}&toCityName=${item.to}`
+                      )
+                    }
+                  >
+                    <Text className="text-[15px] font-semibold text-slate-700">
+                      RedBus
+                    </Text>
+                    <Text className="text-[15px] font-bold text-slate-800">
+                      ₹{Number(item.price) + 50}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <View className="h-px bg-slate-200" />
+
+                  <TouchableOpacity
+                    className="flex-row justify-between items-center py-3"
+                    onPress={() =>
+                      openWebsite(
+                        `https://www.abhibus.com/bus-tickets/${item.from}-to-${item.to}`
+                      )
+                    }
+                  >
+                    <Text className="text-[15px] font-semibold text-slate-700">
+                      AbhiBus
+                    </Text>
+                    <Text className="text-[15px] font-bold text-slate-800">
+                      ₹{Number(item.price) - 20}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          );
+        }}
+      />
+
+      {showFilter && (
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-[rgba(15,23,42,0.35)] justify-end">
+          <View className="bg-white px-6 pt-4 pb-9 rounded-t-[32px]">
+            <View className="w-12 h-1.5 bg-slate-200 rounded-full self-center mb-6" />
+
+            <Text className="text-[20px] font-extrabold text-slate-800 mb-8">
+              Filter Buses
+            </Text>
+
+            <Text className="text-[14px] font-bold text-slate-500 uppercase tracking-[2px] mb-4">
+              Bus Type
+            </Text>
+
+            <View className="flex-row mb-8">
+              {["all", "ac", "non-ac"].map((busType) => {
+                const active = filter === busType;
+                return (
+                  <TouchableOpacity
+                    key={busType}
+                    className={`py-3 px-6 rounded-full mr-3 border ${
+                      active
+                        ? "bg-indigo-50 border-[#4F6EF7]"
+                        : "bg-white border-slate-200"
+                    }`}
+                    onPress={() => setFilter(busType)}
+                  >
+                    <Text
+                      className={`font-semibold text-[14px] ${
+                        active ? "text-[#4F6EF7]" : "text-slate-500"
+                      }`}
+                    >
+                      {busType === "all"
+                        ? "All"
+                        : busType === "ac"
+                        ? "AC"
+                        : "Non-AC"}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-[14px] font-bold text-slate-500 uppercase tracking-[2px]">
+                Max Price
+              </Text>
+              <Text className="text-[18px] font-extrabold text-[#4F6EF7]">
+                ₹{priceRange}
+              </Text>
+            </View>
+
+            <Slider
+              minimumValue={50}
+              maximumValue={1000}
+              step={10}
+              value={priceRange}
+              onValueChange={(val) => setPriceRange(val)}
+              minimumTrackTintColor="#4F6EF7"
+              maximumTrackTintColor="#E2E8F0"
+              thumbTintColor="#4F6EF7"
+            />
+
+            <TouchableOpacity
+              className="bg-[#4F6EF7] py-5 rounded-[22px] mt-8 items-center"
+              style={{
+                shadowColor: "#4F6EF7",
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.3,
+                shadowRadius: 10,
+                elevation: 6,
+              }}
+              onPress={() => setShowFilter(false)}
+            >
+              <Text className="text-white font-extrabold text-[17px] tracking-wide">
+                Apply Filters
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

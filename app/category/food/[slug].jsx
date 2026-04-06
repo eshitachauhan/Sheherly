@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 
-const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace with your laptop IP
+const BASE_URL = "http://10.231.186.250:9000"; 
 
 export default function FoodTypePage() {
   const { slug } = useLocalSearchParams();

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const BASE_URL = "http://10.231.186.139:8000"; // 🔥 replace with your signin/signup backend IP
+const BASE_URL = "http://10.231.186.250:8000"; // 🔥 replace with your signin/signup backend IP
 
 export default function Users() {
   const [users, setUsers] = useState([]);

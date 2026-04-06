@@ -16,25 +16,132 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const BASE_URL = "http://10.231.186.139:9000"; // 🔥 replace this
+import {
+  fetchTransportData,
+  addTransportItem,
+  deleteTransportItem,
+} from "../../utils/transportAdmin";
+
+const BASE_URL = "http://10.231.186.250:9000"; 
 
 const categories = {
   food: ["restaurants", "street-food", "chill-cafes", "night-cafes"],
   medical: ["hospitals", "pharmacies", "clinics", "labs"],
-  transportation: ["bus", "cab", "rickshaw", "bikeRentals"],
+  transportation: ["bus", "rickshaw", "bike-rentals"],
   local: ["finance", "groceries", "local-markets", "house-services"],
   accommodation: ["hotels", "hostels", "pg", "homestays", "resorts"],
-  famous: ["parks-gardens", "historic-monuments", "art-galleries", "shopping-malls", "local-markets", "water-parks", "religious-places", "view-points"],
+  famous: [
+    "parks-gardens",
+    "historic-monuments",
+    "art-galleries",
+    "shopping-malls",
+    "local-markets",
+    "water-parks",
+    "religious-places",
+    "view-points",
+  ],
   safety: null,
 };
 
+// 🔥 Transportation fields (Firebase only)
+const transportFieldConfig = {
+  bus: [
+    "name",
+    "from",
+    "to",
+    "type",
+    "price",
+    "departure",
+    "arrival",
+    "duration",
+    "rating",
+    "seats",
+  ],
 
+  rickshaw: [
+    "driver_name",
+    "driver_id",
+    "vehicle_model",
+    "service_type",
+    "operating_zone",
+    "contact_number",
+    "availability",
+  ],
+
+  "bike-rentals": [
+    "name",
+    "type",
+    "price_per_hour",
+    "price_per_day",
+    "pickup_location",
+    "shop_name",
+    "phone",
+    "whatsapp",
+    "google_maps_link",
+    "image_url",
+    "available",
+  ],
+};
+
+// 🔥 Backend categories fields
 const fieldConfig = {
   food: {
-    restaurants: ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
-    "street-food": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
-    "chill-cafes": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
-    "night-cafes": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],  
+    restaurants: [
+      "id",
+      "name",
+      "lat",
+      "lng",
+      "location",
+      "rating",
+      "phone",
+      "timings",
+      "zomato",
+      "swiggy",
+      "zomatoPrice",
+      "swiggyPrice",
+    ],
+    "street-food": [
+      "id",
+      "name",
+      "lat",
+      "lng",
+      "location",
+      "rating",
+      "phone",
+      "timings",
+      "zomato",
+      "swiggy",
+      "zomatoPrice",
+      "swiggyPrice",
+    ],
+    "chill-cafes": [
+      "id",
+      "name",
+      "lat",
+      "lng",
+      "location",
+      "rating",
+      "phone",
+      "timings",
+      "zomato",
+      "swiggy",
+      "zomatoPrice",
+      "swiggyPrice",
+    ],
+    "night-cafes": [
+      "id",
+      "name",
+      "lat",
+      "lng",
+      "location",
+      "rating",
+      "phone",
+      "timings",
+      "zomato",
+      "swiggy",
+      "zomatoPrice",
+      "swiggyPrice",
+    ],
   },
 
   medical: {
@@ -44,18 +151,48 @@ const fieldConfig = {
     labs: ["id", "name", "address", "lat", "lng", "phone", "timings"],
   },
 
-  transportation: {
-    bus: ["name", "route", "fare", "timings"],
-    cab: ["name", "phone", "location"],
-    rickshaw: ["name", "phone", "location"],
-    bikeRentals: ["name", "phone", "location", "price"],
-  },
-
   local: {
-    finance: ["id", "name", "brand", "amenity", "lat", "lon", "address", "opening_hours"],
-    groceries: ["store_id", "name", "type", "area", "lat", "lng", "opening_hours", "delivery", "address"],
-    "local-markets": ["market_id", "name", "type", "area", "lat", "lng", "opening_hours", "address"],
-    "house-services": ["id", "name", "type", "area", "lat", "lng", "opening_hours", "phone"],
+    finance: [
+      "id",
+      "name",
+      "brand",
+      "amenity",
+      "lat",
+      "lon",
+      "address",
+      "opening_hours",
+    ],
+    groceries: [
+      "store_id",
+      "name",
+      "type",
+      "area",
+      "lat",
+      "lng",
+      "opening_hours",
+      "delivery",
+      "address",
+    ],
+    "local-markets": [
+      "market_id",
+      "name",
+      "type",
+      "area",
+      "lat",
+      "lng",
+      "opening_hours",
+      "address",
+    ],
+    "house-services": [
+      "id",
+      "name",
+      "type",
+      "area",
+      "lat",
+      "lng",
+      "opening_hours",
+      "phone",
+    ],
   },
 
   accommodation: {
@@ -67,7 +204,7 @@ const fieldConfig = {
   },
 
   famous: {
-    "park-gardens": ["id", "name", "lat", "lng", "address", "timings"],
+    "parks-gardens": ["id", "name", "lat", "lng", "address", "timings"],
     "historic-monuments": ["id", "name", "lat", "lng", "address", "timings"],
     "art-galleries": ["id", "name", "lat", "lng", "address", "timings"],
     "shopping-malls": ["id", "name", "lat", "lng", "address", "timings"],
@@ -91,7 +228,7 @@ export default function Services() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({});
 
-  // When category changes, auto-pick first subtype if needed
+  // Auto set subtype when category changes
   useEffect(() => {
     if (category === "safety") {
       setType(null);
@@ -100,7 +237,7 @@ export default function Services() {
     }
   }, [category]);
 
-  // Fetch whenever category/type changes
+  // Fetch data
   useEffect(() => {
     fetchData();
   }, [category, type]);
@@ -109,6 +246,14 @@ export default function Services() {
     try {
       setLoading(true);
 
+      // 🔥 Transportation from Firebase
+      if (category === "transportation") {
+        const transportData = await fetchTransportData(type);
+        setData(transportData);
+        return;
+      }
+
+      // 🔥 Rest from backend
       const url = type
         ? `${BASE_URL}/api/admin/data/${category}/${type}`
         : `${BASE_URL}/api/admin/data/${category}`;
@@ -131,21 +276,61 @@ export default function Services() {
   };
 
   const handleAdd = async () => {
-    if (!formData.name?.trim()) {
+    // Validation
+    if (category !== "transportation" && !formData.name?.trim()) {
       Alert.alert("Error", "Name is required");
       return;
     }
 
-    const item = {
+    if (
+      category === "transportation" &&
+      type === "rickshaw" &&
+      !formData.driver_name?.trim()
+    ) {
+      Alert.alert("Error", "Driver name is required");
+      return;
+    }
+
+    if (
+      category === "transportation" &&
+      type !== "rickshaw" &&
+      !formData.name?.trim()
+    ) {
+      Alert.alert("Error", "Name is required");
+      return;
+    }
+
+    let item = {
       ...formData,
-      id: Date.now().toString(),
     };
 
-    // Convert numeric-ish fields where useful
+    // Backend categories need manual ID
+    if (category !== "transportation") {
+      item.id = Date.now().toString();
+    }
+
+    // Convert numbers
     if (item.rating) item.rating = Number(item.rating);
     if (item.lat) item.lat = Number(item.lat);
     if (item.lng) item.lng = Number(item.lng);
-    if (item.fare) item.fare = Number(item.fare);
+    if (item.lon) item.lon = Number(item.lon);
+    if (item.price) item.price = Number(item.price);
+    if (item.price_per_hour) item.price_per_hour = Number(item.price_per_hour);
+    if (item.price_per_day) item.price_per_day = Number(item.price_per_day);
+    if (item.seats) item.seats = Number(item.seats);
+
+    // Convert booleans for Firebase transport
+    if (item.availability !== undefined) {
+      item.availability = item.availability === "true";
+    }
+
+    if (item.available !== undefined) {
+      item.available = item.available === "true";
+    }
+
+    if (item.delivery !== undefined) {
+      item.delivery = item.delivery === "true";
+    }
 
     // Remove empty keys
     Object.keys(item).forEach((key) => {
@@ -155,6 +340,22 @@ export default function Services() {
     });
 
     try {
+      // 🔥 Transportation -> Firebase
+      if (category === "transportation") {
+        const result = await addTransportItem(type, item);
+
+        if (!result.success) {
+          Alert.alert("Error", "Failed to add transport item");
+          return;
+        }
+
+        setFormData({});
+        setShowAddModal(false);
+        fetchData();
+        return;
+      }
+
+      // 🔥 Rest -> Backend
       const url = type
         ? `${BASE_URL}/api/admin/data/${category}/${type}`
         : `${BASE_URL}/api/admin/data/${category}`;
@@ -185,6 +386,20 @@ export default function Services() {
 
   const handleDelete = async (id) => {
     try {
+      // 🔥 Transportation -> Firebase
+      if (category === "transportation") {
+        const result = await deleteTransportItem(type, id);
+
+        if (!result.success) {
+          Alert.alert("Error", "Failed to delete transport item");
+          return;
+        }
+
+        fetchData();
+        return;
+      }
+
+      // 🔥 Rest -> Backend
       const url = type
         ? `${BASE_URL}/api/admin/data/${category}/${type}/${id}`
         : `${BASE_URL}/api/admin/data/${category}/${id}`;
@@ -207,10 +422,10 @@ export default function Services() {
     }
   };
 
-  // Fix blank cards by using fallback keys
   const getDisplayName = (item) => {
     return (
       item.name ||
+      item.driver_name ||
       item.title ||
       item.route ||
       item.type ||
@@ -247,7 +462,10 @@ export default function Services() {
                 {Object.keys(categories).map((cat) => (
                   <TouchableOpacity
                     key={cat}
-                    onPress={() => setCategory(cat)}
+                    onPress={() => {
+                      setCategory(cat);
+                      setFormData({});
+                    }}
                     className={`px-5 py-3 rounded-2xl mr-3 ${
                       category === cat ? "bg-[#3C91E6]" : "bg-[#e8ebf2]"
                     }`}
@@ -275,7 +493,10 @@ export default function Services() {
                   {categories[category].map((t) => (
                     <TouchableOpacity
                       key={t}
-                      onPress={() => setType(t)}
+                      onPress={() => {
+                        setType(t);
+                        setFormData({});
+                      }}
                       className={`px-4 py-2 rounded-xl mr-2 ${
                         type === t ? "bg-[#CDEB8B]" : "bg-[#eef1f6]"
                       }`}
@@ -296,7 +517,10 @@ export default function Services() {
             {/* Add Button */}
             <View className="px-6 mt-6">
               <TouchableOpacity
-                onPress={() => setShowAddModal(true)}
+                onPress={() => {
+                  setFormData({});
+                  setShowAddModal(true);
+                }}
                 className="bg-[#218fb4] py-4 rounded-2xl"
               >
                 <Text className="text-white text-center text-lg font-semibold">
@@ -353,75 +577,79 @@ export default function Services() {
       />
 
       {/* Add Modal */}
-      {/* Add Modal */}
-<Modal visible={showAddModal} animationType="slide" transparent>
-  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <View className="flex-1 bg-black/30 justify-end">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "android" ? "height" : "padding"}
-        keyboardVerticalOffset={20}
-      >
-        <View
-          className="bg-white rounded-t-3xl px-6 pb-10"
-          style={{
-            maxHeight: "88%",
-            paddingTop: 28, // 🔥 pushes content slightly downward
-          }}
-        >
-          <Text className="text-2xl font-bold text-gray-900 mb-5">
-            Add {category}
-          </Text>
-
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ paddingBottom: 30 }}
-          >
-            {(fieldConfig[category]?.[type] ||
-              fieldConfig[category]?.default ||
-              []).map((field) => (
-              <TextInput
-                key={field}
-                placeholder={field}
-                placeholderTextColor="#777"
-                value={formData[field] || ""}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    [field]: text,
-                  }))
-                }
-                className="border border-gray-300 rounded-2xl px-4 py-4 text-base bg-[#f8f9fc] mb-3"
-                style={{ minHeight: 58 }}
-              />
-            ))}
-
-            <TouchableOpacity
-              onPress={handleAdd}
-              className="bg-[#218fb4] py-4 rounded-2xl mt-3"
+      <Modal visible={showAddModal} animationType="slide" transparent>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1 bg-black/30 justify-end">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "android" ? "height" : "padding"}
+              keyboardVerticalOffset={20}
             >
-              <Text className="text-white text-center text-lg font-semibold">
-                Save Item
-              </Text>
-            </TouchableOpacity>
+              <View
+                className="bg-white rounded-t-3xl px-6 pb-10"
+                style={{
+                  maxHeight: "88%",
+                  paddingTop: 28,
+                }}
+              >
+                <Text className="text-2xl font-bold text-gray-900 mb-5">
+                  Add {category}
+                  {type ? ` → ${type}` : ""}
+                </Text>
 
-            <TouchableOpacity
-              onPress={() => {
-                setShowAddModal(false);
-                setFormData({});
-              }}
-              className="py-4 rounded-2xl mt-3 bg-[#eef1f6]"
-            >
-              <Text className="text-center text-gray-700 text-lg font-medium">
-                Cancel
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
-    </View>
-  </TouchableWithoutFeedback>
-</Modal>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  contentContainerStyle={{ paddingBottom: 30 }}
+                >
+                  {(
+                    category === "transportation"
+                      ? transportFieldConfig[type] || []
+                      : fieldConfig[category]?.[type] ||
+                        fieldConfig[category]?.default ||
+                        []
+                  ).map((field) => (
+                    <TextInput
+                      key={field}
+                      placeholder={field}
+                      placeholderTextColor="#777"
+                      value={formData[field] || ""}
+                      onChangeText={(text) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          [field]: text,
+                        }))
+                      }
+                      className="border border-gray-300 rounded-2xl px-4 py-4 text-base bg-[#f8f9fc] mb-3"
+                      style={{ minHeight: 58 }}
+                    />
+                  ))}
+
+                  <TouchableOpacity
+                    onPress={handleAdd}
+                    className="bg-[#218fb4] py-4 rounded-2xl mt-3"
+                  >
+                    <Text className="text-white text-center text-lg font-semibold">
+                      Save Item
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowAddModal(false);
+                      setFormData({});
+                    }}
+                    className="py-4 rounded-2xl mt-3 bg-[#eef1f6]"
+                  >
+                    <Text className="text-center text-gray-700 text-lg font-medium">
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              </View>
+            </KeyboardAvoidingView>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   );
 }
