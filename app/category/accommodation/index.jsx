@@ -21,7 +21,7 @@ export default function AccommodationPage() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f5f9]">
-      
+
       <View className="p-6">
         <Text className="text-3xl font-bold text-gray-800">Accommodation</Text>
         <Text className="text-sm text-gray-600 mt-1">

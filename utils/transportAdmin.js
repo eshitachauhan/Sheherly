@@ -7,14 +7,14 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 
-// only 3 transport collections
+
 const collectionMap = {
   bus: "buses",
   rickshaw: "erickshaws",
   "bike-rentals": "bikeRentals",
 };
 
-// ✅ FETCH
+
 export const fetchTransportData = async (type) => {
   try {
     const colName = collectionMap[type];
@@ -32,7 +32,7 @@ export const fetchTransportData = async (type) => {
   }
 };
 
-// ✅ ADD
+
 export const addTransportItem = async (type, item) => {
   try {
     const colName = collectionMap[type];
@@ -47,7 +47,7 @@ export const addTransportItem = async (type, item) => {
   }
 };
 
-// ✅ DELETE
+
 export const deleteTransportItem = async (type, id) => {
   try {
     const colName = collectionMap[type];

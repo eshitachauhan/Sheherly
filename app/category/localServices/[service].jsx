@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 
-const BASE_URL = "http://10.231.186.250:9000"; 
+const BASE_URL = "http://10.231.186.250:9000";
 
 export default function LocalServiceTypePage() {
   const { service } = useLocalSearchParams();
@@ -19,12 +19,11 @@ export default function LocalServiceTypePage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Normalize Data
+  // Normalize Data
   const normalizeLocalServices = (rawData = []) => {
     return rawData
       .map((item) => {
 
-        // 🏦 BANK / ATM
         if (item.amenity === "bank" || item.amenity === "atm") {
           return {
             id: item.id,
@@ -37,7 +36,6 @@ export default function LocalServiceTypePage() {
           };
         }
 
-        // 🥕 GROCERIES
         if (item.store_id) {
           return {
             id: item.store_id,
@@ -51,7 +49,6 @@ export default function LocalServiceTypePage() {
           };
         }
 
-        // 🧺 MARKETS
         if (item.market_id) {
           return {
             id: item.market_id,
@@ -64,7 +61,6 @@ export default function LocalServiceTypePage() {
           };
         }
 
-        // 🧹 HOUSE SERVICES
         if (item.phone) {
           return {
             id: item.id,
@@ -128,7 +124,6 @@ export default function LocalServiceTypePage() {
         </Text>
       </View>
 
-      {/* 🔹 List */}
       <FlatList
         data={data}
         keyExtractor={(item) => item.id.toString()}
@@ -137,10 +132,8 @@ export default function LocalServiceTypePage() {
         renderItem={({ item }) => (
           <View className="bg-white p-4 rounded-2xl mb-4 shadow">
 
-            {/* Name */}
             <Text className="text-lg font-semibold">{item.name}</Text>
 
-            {/* Info */}
             <Text className="text-sm text-gray-500 mt-1">
               {item.type} · {item.address}
             </Text>
@@ -149,14 +142,12 @@ export default function LocalServiceTypePage() {
               🕒 {item.opening_hours || "N/A"}
             </Text>
 
-            {/* 🚚 Delivery (only groceries) */}
             {item.delivery !== undefined && (
               <Text className="text-xs mt-1 text-gray-500">
                 {item.delivery ? "🛵 Delivery Available" : "🚫 No Delivery"}
               </Text>
             )}
 
-            {/* 📍 Directions Button */}
             <TouchableOpacity
               onPress={() =>
                 Linking.openURL(
@@ -170,7 +161,6 @@ export default function LocalServiceTypePage() {
               </Text>
             </TouchableOpacity>
 
-            {/* 📞 Call Button (only if phone exists) */}
             {item.phone && (
               <TouchableOpacity
                 onPress={() => Linking.openURL(`tel:${item.phone}`)}

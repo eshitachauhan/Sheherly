@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 
-const BASE_URL = "http://10.231.186.250:9000"; 
+const BASE_URL = "http://10.231.186.250:9000";
 
 export default function FoodTypePage() {
   const { slug } = useLocalSearchParams();
@@ -42,7 +42,7 @@ export default function FoodTypePage() {
     }
   }, [slug]);
 
-  // ⭐ Sort by rating
+  // Sort by rating
   const getSortedData = () => {
     let sorted = [...data];
 
@@ -95,16 +95,15 @@ export default function FoodTypePage() {
         renderItem={({ item }) => (
           <View className="bg-white p-4 rounded-2xl mb-4 shadow">
 
-            {/* TOP ROW */}
+
             <View className="flex-row justify-between items-center">
               <Text className="text-lg font-semibold flex-1">
                 {item.name}
               </Text>
 
-              {/* ICONS RIGHT */}
               <View className="flex-row items-center">
 
-                {/* MAP */}
+
                 <TouchableOpacity
                   onPress={() =>
                     Linking.openURL(
@@ -116,7 +115,7 @@ export default function FoodTypePage() {
                   <Text className="text-lg">📍</Text>
                 </TouchableOpacity>
 
-                {/* CALL */}
+
                 {item.phone && item.phone !== "N/A" && (
                   <TouchableOpacity
                     onPress={() => Linking.openURL(`tel:${item.phone}`)}
@@ -128,7 +127,7 @@ export default function FoodTypePage() {
               </View>
             </View>
 
-            {/* DETAILS */}
+
             <Text className="text-sm text-gray-500 mt-1">
               {item.location} · ⭐ {item.rating || 0}
             </Text>
@@ -139,7 +138,6 @@ export default function FoodTypePage() {
               </Text>
             )}
 
-            {/* ZOMATO BUTTON */}
             {item.zomato && (
               <TouchableOpacity
                 onPress={() => Linking.openURL(item.zomato)}
@@ -152,7 +150,7 @@ export default function FoodTypePage() {
               </TouchableOpacity>
             )}
 
-            {/* SWIGGY BUTTON */}
+
             {item.swiggy && (
               <TouchableOpacity
                 onPress={() => Linking.openURL(item.swiggy)}

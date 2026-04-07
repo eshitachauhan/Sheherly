@@ -6,7 +6,7 @@ app = FastAPI(title="Sheherly Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # okay for development
+    allow_origins=["*"],   
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

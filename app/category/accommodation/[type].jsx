@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 
-const BASE_URL = "http://10.231.186.250:9000"; // admin backend
+const BASE_URL = "http://10.231.186.250:9000";
 
 export default function AccommodationTypePage() {
   const { type } = useLocalSearchParams();
@@ -120,9 +120,8 @@ export default function AccommodationTypePage() {
 
                       return (
                         <View
-                          className={`mr-3 p-3 rounded-xl min-w-[140px] ${
-                            isCheapest ? "bg-green-100" : "bg-gray-100"
-                          }`}
+                          className={`mr-3 p-3 rounded-xl min-w-[140px] ${isCheapest ? "bg-green-100" : "bg-gray-100"
+                            }`}
                         >
                           <Text className="text-sm font-medium">
                             {platform.name}

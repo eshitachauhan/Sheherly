@@ -25,7 +25,7 @@ const Signin = () => {
     });
 
     const data = await res.json();
-    console.log("FULL RESPONSE:", data); // ✅ DEBUG
+    console.log("FULL RESPONSE:", data); 
 
     if (!res.ok) {
       Alert.alert("Signin Failed", data.message || "Invalid credentials");

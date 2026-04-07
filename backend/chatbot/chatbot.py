@@ -4,9 +4,6 @@ import os
 import certifi
 os.environ["SSL_CERT_FILE"] = certifi.where()
 
-# --------------------------------------------------
-# IMPORTS
-# --------------------------------------------------
 
 import json
 import re
@@ -15,17 +12,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 from chatbot.prompt import SYSTEM_PROMPT
 
-# --------------------------------------------------
-# PATHS
-# --------------------------------------------------
 
 BASE_DIR = Path(__file__).parent
 ENV_PATH = BASE_DIR / ".env"
 DATA_PATH = BASE_DIR / "jaipur_city_data.json"
 
-# --------------------------------------------------
-# ENV + MODEL
-# --------------------------------------------------
+
 
 load_dotenv(dotenv_path=ENV_PATH)
 
@@ -39,9 +31,6 @@ MODEL = "openai/gpt-3.5-turbo"
 print("✅ .env loaded successfully")
 print("Resolved DATA_PATH:", DATA_PATH)
 
-# --------------------------------------------------
-# LOAD CITY DATA
-# --------------------------------------------------
 
 if not DATA_PATH.exists():
     raise FileNotFoundError(f"City data file not found: {DATA_PATH}")
@@ -51,9 +40,7 @@ with open(DATA_PATH, "r", encoding="utf-8") as f:
 
 print("✅ Jaipur city data loaded successfully!")
 
-# --------------------------------------------------
-# HELPERS
-# --------------------------------------------------
+
 
 STOPWORDS = {
     "tell", "me", "about", "the", "timing", "timings", "of", "in", "jaipur",
@@ -252,9 +239,6 @@ def needs_reasoning(query: str) -> bool:
     q = query.lower()
     return any(word in q for word in keywords)
 
-# --------------------------------------------------
-# AI FALLBACK (OpenRouter)
-# --------------------------------------------------
 
 def ask_ai_fallback(user_query: str) -> str:
     headers = {
@@ -305,9 +289,6 @@ def ask_ai_fallback(user_query: str) -> str:
         print("❌ Exception in ask_ai_fallback:", str(e))
         return "Sorry, I’m unable to respond right now."
 
-# --------------------------------------------------
-# MAIN FUNCTION USED BY FASTAPI
-# --------------------------------------------------
 
 def get_chatbot_response(user_query: str) -> str:
     if not user_query.strip():
@@ -329,22 +310,17 @@ def get_chatbot_response(user_query: str) -> str:
             "but I don’t have access to live weather updates."
         )
 
-    # --------------------------------------------------
-    # 1. Exact / strong local place match ONLY
-    # --------------------------------------------------
+
     best_entity = find_best_entity_match(user_query)
 
     if best_entity:
         name_norm = best_entity["name_norm"]
         overlap = set(tokenize(query_norm)) & set(tokenize(name_norm))
 
-        # Only trust local JSON if clearly same place
         if name_norm in query_norm or len(overlap) >= 2:
             return format_response(best_entity["name"], best_entity["data"])
 
-    # --------------------------------------------------
-    # 2. Broad category suggestions ONLY for broad queries
-    # --------------------------------------------------
+
     if is_broad_category_query(user_query):
         category_matches = find_category_matches(user_query)
 
@@ -353,14 +329,7 @@ def get_chatbot_response(user_query: str) -> str:
             results = [format_response(item["name"], item["data"]) for item in category_matches]
             return intro + "\n\n".join(results)
 
-    # --------------------------------------------------
-    # 3. AI fallback for everything else
-    # --------------------------------------------------
     return ask_ai_fallback(user_query)
-
-# --------------------------------------------------
-# OPTIONAL CLI MODE
-# --------------------------------------------------
 
 def main():
     print("\nSheherly – Explore Jaipur Like a Local 🌸")

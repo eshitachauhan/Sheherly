@@ -131,7 +131,6 @@ export default function SafetyPage() {
                       📍 {item.info}
                     </Text>
 
-                    {/* Directions */}
                     <TouchableOpacity
                       onPress={() =>
                         Linking.openURL(

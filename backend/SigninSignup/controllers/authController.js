@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-/* ================= SIGNUP ================= */
+
 export const signup = async (req, res) => {
   const { email, password } = req.body;
 
@@ -23,7 +23,7 @@ export const signup = async (req, res) => {
     const user = await User.create({
       email,
       password: hashedPassword,
-      role: "user", // ✅ default role
+      role: "user",
     });
 
     console.log("User created:", user._id);
@@ -52,7 +52,7 @@ export const signup = async (req, res) => {
   }
 };
 
-/* ================= SIGNIN ================= */
+
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -80,7 +80,7 @@ export const signin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // ✅ IMPORTANT FIX: send proper user object
+
     return res.status(200).json({
       success: true,
       token,
@@ -100,7 +100,7 @@ export const signin = async (req, res) => {
   }
 };
 
-/* ================= CHANGE PASSWORD ================= */
+
 export const changePassword = async (req, res) => {
   try {
     console.log("CHANGE PASSWORD HIT");
@@ -133,7 +133,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-/* ================= DELETE ACCOUNT ================= */
+
 export const deleteAccount = async (req, res) => {
   try {
     console.log("DELETE USER ID:", req.userId);

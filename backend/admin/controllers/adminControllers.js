@@ -1,4 +1,4 @@
-import User from "../../SigninSignup/models/User.js"; // same user model
+import User from "../../SigninSignup/models/User.js"; 
 
 export const getAllUsers = async (req, res) => {
   try {

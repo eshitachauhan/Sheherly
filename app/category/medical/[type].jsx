@@ -12,7 +12,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
 
-const BASE_URL = "http://10.231.186.250:9000"; 
+const BASE_URL = "http://10.231.186.250:9000";
 
 export default function MedicalTypePage() {
   const { type } = useLocalSearchParams();
@@ -21,7 +21,7 @@ export default function MedicalTypePage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 📍 Get user location
+  // Get user location
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -32,7 +32,7 @@ export default function MedicalTypePage() {
     })();
   }, []);
 
-  // 🧠 Open/Closed Logic
+  // Open/Closed Logic
   const isOpenNow = (timings) => {
     if (!timings) return false;
 
@@ -47,7 +47,7 @@ export default function MedicalTypePage() {
     return currentHour >= start && currentHour <= end;
   };
 
-  // 📏 Distance calc
+  // Distance calc
   const getDistance = (lat1, lon1, lat2, lon2) => {
     return Math.sqrt(
       Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2)
@@ -72,7 +72,7 @@ export default function MedicalTypePage() {
         isOpen: isOpenNow(item.timings || ""),
       }));
 
-      // 📍 Sort nearest first if location available
+      // Sort nearest first if location available
       if (userLocation) {
         formatted.sort((a, b) =>
           getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lng) -
@@ -95,13 +95,13 @@ export default function MedicalTypePage() {
     }
   }, [type, userLocation]);
 
-  // 📞 Call
+
   const callPlace = (phone) => {
     if (!phone || phone === "N/A") return;
     Linking.openURL(`tel:${phone}`);
   };
 
-  // 🧭 Directions
+
   const openMaps = (lat, lng) => {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
     Linking.openURL(url);

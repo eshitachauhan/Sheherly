@@ -70,7 +70,7 @@ export default function TransportationPage() {
               key={item.id}
               activeOpacity={0.85}
 
-              // ✅ IMPORTANT FIX
+
               onPress={() =>
                 router.push({
                   pathname: "/category/transportation/search",

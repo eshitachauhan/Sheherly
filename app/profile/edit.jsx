@@ -13,7 +13,7 @@ export default function EditProfile() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
-  
+
   useEffect(() => {
     const loadProfile = async () => {
       const token = await SecureStore.getItemAsync("token");
@@ -32,7 +32,7 @@ export default function EditProfile() {
 
     loadProfile();
   }, []);
- 
+
   const handleSave = async () => {
     if (!name && !phone) {
       Alert.alert("Nothing to update");
@@ -42,13 +42,13 @@ export default function EditProfile() {
     try {
       setLoading(true);
       const token = await SecureStore.getItemAsync("token");
-      console.log("Token:", token); 
+      console.log("Token:", token);
 
-    if (!token) {
-      Alert.alert("Not logged in or token missing");
-      setLoading(false);
-      return;
-    }
+      if (!token) {
+        Alert.alert("Not logged in or token missing");
+        setLoading(false);
+        return;
+      }
 
       const res = await fetch(`${BASE_URL}/api/auth/update-profile`, {
         method: "PATCH",
@@ -64,12 +64,12 @@ export default function EditProfile() {
       console.log("Response data:", data);
 
       if (!res.ok) {
-      Alert.alert("Update failed", data.message || "Unknown error");
-      return;
-    }
+        Alert.alert("Update failed", data.message || "Unknown error");
+        return;
+      }
 
       Alert.alert("Profile updated ✅");
-      router.back(); 
+      router.back();
     } catch (err) {
       Alert.alert("Error updating profile");
       console.log(err);
@@ -85,7 +85,7 @@ export default function EditProfile() {
           Edit Profile
         </Text>
 
-        
+
         <View className="mb-4">
           <Text className="text-sm text-gray-500 mb-1">Name</Text>
           <TextInput
@@ -96,7 +96,7 @@ export default function EditProfile() {
           />
         </View>
 
-      \
+
         <View className="mb-4">
           <Text className="text-sm text-gray-500 mb-1">Phone</Text>
           <TextInput

@@ -12,16 +12,13 @@ CORS(app)
 
 stemmer = PorterStemmer()
 
-# Load stopwords safely
+
 try:
     stop_words = set(stopwords.words('english'))
 except LookupError:
     nltk.download('stopwords')
     stop_words = set(stopwords.words('english'))
 
-# -----------------------------
-# CATEGORY KEYWORDS
-# -----------------------------
 CATEGORY_KEYWORDS = {
     "accommodation": [
         "stay", "room", "rooms", "hotel", "hotels", "hostel", "hostels",
@@ -65,9 +62,7 @@ CATEGORY_ROUTES = {
     "famousSpots": "/category/famousSpots"
 }
 
-# -----------------------------
-# TEXT PREPROCESSING
-# -----------------------------
+
 def preprocess_text(text):
     text = text.lower()
     text = text.translate(str.maketrans('', '', string.punctuation))
@@ -80,16 +75,12 @@ def preprocess_text(text):
 
     return cleaned_words
 
-# -----------------------------
-# FUZZY MATCH (for typos)
-# -----------------------------
+
 def fuzzy_match(token, keyword_list):
     matches = difflib.get_close_matches(token, keyword_list, n=1, cutoff=0.75)
     return len(matches) > 0
 
-# -----------------------------
-# DETECT CATEGORY
-# -----------------------------
+
 def detect_category(query):
     tokens = preprocess_text(query)
     scores = {}
@@ -113,14 +104,12 @@ def detect_category(query):
 
     return best_category
 
-# -----------------------------
-# EXTRACT SUBCATEGORY FILTERS
-# -----------------------------
+
 def extract_filters(query):
     lower = query.lower()
     filters = {}
 
-    # ---------------- Accommodation ----------------
+   
     if "pg" in lower or "guest" in lower:
         filters["type"] = "pg"
     elif "hostel" in lower:
@@ -132,7 +121,7 @@ def extract_filters(query):
     elif "flat" in lower or "apartment" in lower:
         filters["type"] = "flat"
 
-    # ---------------- Food ----------------
+   
     elif "restaurant" in lower or "restaurants" in lower or "restraunt" in lower or "restraunts" in lower:
         filters["type"] = "restaurant"
     elif "cafe" in lower or "cafes" in lower or "coffee" in lower:
@@ -144,7 +133,7 @@ def extract_filters(query):
     elif "mess" in lower or "tiffin" in lower:
         filters["type"] = "mess"
 
-    # ---------------- Transportation ----------------
+    
     elif "bus" in lower:
         filters["type"] = "bus"
     elif "train" in lower or "railway" in lower:
@@ -156,7 +145,7 @@ def extract_filters(query):
     elif "cab" in lower or "taxi" in lower or "uber" in lower or "ola" in lower:
         filters["type"] = "cab"
 
-    # ---------------- Medical ----------------
+    
     elif "hospital" in lower:
         filters["type"] = "hospital"
     elif "clinic" in lower:
@@ -166,7 +155,7 @@ def extract_filters(query):
     elif "doctor" in lower:
         filters["type"] = "doctor"
 
-    # ---------------- Local Services ----------------
+
     elif "atm" in lower:
         filters["type"] = "atm"
     elif "bank" in lower:
@@ -182,7 +171,7 @@ def extract_filters(query):
     elif "mobile shop" in lower or "electronics" in lower:
         filters["type"] = "electronics"
 
-    # ---------------- Famous Spots ----------------
+
     elif "temple" in lower or "mandir" in lower:
         filters["type"] = "temple"
     elif "mall" in lower:
@@ -200,16 +189,14 @@ def extract_filters(query):
     elif "mosque" in lower or "masjid" in lower:
         filters["type"] = "mosque"
 
-    # ---------------- Price ----------------
+   
     price_match = re.search(r'under\s*(\d+)', lower)
     if price_match:
         filters["maxPrice"] = int(price_match.group(1))
 
     return filters
 
-# -----------------------------
-# SEARCH ROUTE
-# -----------------------------
+
 @app.route("/search", methods=["POST"])
 def search():
     data = request.get_json()
@@ -239,9 +226,7 @@ def search():
         "filters": filters
     })
 
-# -----------------------------
-# SUGGEST ROUTE
-# -----------------------------
+
 @app.route("/suggest", methods=["POST"])
 def suggest():
     data = request.get_json()
@@ -269,8 +254,6 @@ def suggest():
         "suggestions": list(dict.fromkeys(suggestions))
     })
 
-# -----------------------------
-# RUN APP
-# -----------------------------
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

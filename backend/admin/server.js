@@ -10,7 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ JSON data routes
 app.use("/api/admin/data", dataRoutes);
 
 app.get("/", (req, res) => {

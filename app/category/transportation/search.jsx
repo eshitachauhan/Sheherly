@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert, // ✅ ADDED
+  Alert,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
@@ -14,11 +14,11 @@ export default function TransportSearch() {
   const router = useRouter();
   const { type } = useLocalSearchParams();
 
-  // 🚌 BUS
+  // BUS
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
-  // 🚖 RICKSHAW
+  // RICKSHAW
   const [service, setService] = useState("Passenger");
   const [area, setArea] = useState("Sindhi Camp");
 
@@ -33,9 +33,9 @@ export default function TransportSearch() {
     "Mansarovar",
   ];
 
-  // ✅ UPDATED HANDLE SEARCH
+
   const handleSearch = () => {
-    // 🚖 RICKSHAW
+    // RICKSHAW
     if (type === "rickshaw") {
       if (!service || !area) {
         Alert.alert("Missing Info", "Please select service and area");
@@ -50,14 +50,14 @@ export default function TransportSearch() {
       return;
     }
 
-    // 🛵 BIKE RENTALS
+    // BIKE RENTALS
     if (type === "bike-rentals") {
       // (optional validation later if needed)
       router.push(`/category/transportation/bike-rentals`);
       return;
     }
 
-    // 🚌 BUS
+    // BUS
     if (!from.trim() || !to.trim()) {
       Alert.alert(
         "Missing Info",
@@ -89,17 +89,17 @@ export default function TransportSearch() {
         {type === "bus"
           ? "Search Buses 🚌"
           : type === "rickshaw"
-          ? "Find E-Rickshaw 🚖"
-          : type === "bike-rentals"
-          ? "Bike Rentals 🏍️"
-          : `Search ${type}`}
+            ? "Find E-Rickshaw 🚖"
+            : type === "bike-rentals"
+              ? "Bike Rentals 🏍️"
+              : `Search ${type}`}
       </Text>
 
       <TouchableOpacity style={styles.locationBtn} onPress={detectLocation}>
         <Text style={styles.locationText}>📍 Use Current Location</Text>
       </TouchableOpacity>
 
-      {/* 🚌 BUS UI */}
+
       {type === "bus" ? (
         <View style={styles.card}>
           <TextInput
@@ -117,7 +117,7 @@ export default function TransportSearch() {
           />
         </View>
       ) : type === "rickshaw" ? (
-        /* 🚖 RICKSHAW UI */
+
         <View style={styles.card}>
           <Text style={styles.label}>Service Type</Text>
 
@@ -190,8 +190,8 @@ export default function TransportSearch() {
           {type === "rickshaw"
             ? "Find Drivers"
             : type === "bike-rentals"
-            ? "Find Bikes"
-            : "Search"}
+              ? "Find Bikes"
+              : "Search"}
         </Text>
       </TouchableOpacity>
     </View>

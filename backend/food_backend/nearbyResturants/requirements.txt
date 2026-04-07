@@ -1,4 +1,0 @@
-requests
-python-dotenv
-certifi
-python-certifi-win32

@@ -22,7 +22,7 @@ import {
   deleteTransportItem,
 } from "../../utils/transportAdmin";
 
-const BASE_URL = "http://10.231.186.250:9000"; 
+const BASE_URL = "http://10.231.186.250:9000";
 
 const categories = {
   food: ["restaurants", "street-food", "chill-cafes", "night-cafes"],
@@ -30,118 +30,24 @@ const categories = {
   transportation: ["bus", "rickshaw", "bike-rentals"],
   local: ["finance", "groceries", "local-markets", "house-services"],
   accommodation: ["hotels", "hostels", "pg", "homestays", "resorts"],
-  famous: [
-    "parks-gardens",
-    "historic-monuments",
-    "art-galleries",
-    "shopping-malls",
-    "local-markets",
-    "water-parks",
-    "religious-places",
-    "view-points",
-  ],
+  famous: ["parks-gardens", "historic-monuments", "art-galleries", "shopping-malls", "local-markets", "water-parks", "religious-places", "view-points"],
   safety: null,
 };
 
-// 🔥 Transportation fields (Firebase only)
+// Transportation fields (Firebase only)
 const transportFieldConfig = {
-  bus: [
-    "name",
-    "from",
-    "to",
-    "type",
-    "price",
-    "departure",
-    "arrival",
-    "duration",
-    "rating",
-    "seats",
-  ],
-
-  rickshaw: [
-    "driver_name",
-    "driver_id",
-    "vehicle_model",
-    "service_type",
-    "operating_zone",
-    "contact_number",
-    "availability",
-  ],
-
-  "bike-rentals": [
-    "name",
-    "type",
-    "price_per_hour",
-    "price_per_day",
-    "pickup_location",
-    "shop_name",
-    "phone",
-    "whatsapp",
-    "google_maps_link",
-    "image_url",
-    "available",
-  ],
+  bus: ["name", "from", "to", "type", "price", "departure", "arrival", "duration", "rating", "seats"],
+  rickshaw: ["driver_name", "driver_id", "vehicle_model", "service_type", "operating_zone", "contact_number", "availability"],
+  "bike-rentals": ["name", "type", "price_per_hour", "price_per_day", "pickup_location", "shop_name", "phone", "whatsapp", "google_maps_link", "image_url", "available"],
 };
 
-// 🔥 Backend categories fields
+// Backend categories fields
 const fieldConfig = {
   food: {
-    restaurants: [
-      "id",
-      "name",
-      "lat",
-      "lng",
-      "location",
-      "rating",
-      "phone",
-      "timings",
-      "zomato",
-      "swiggy",
-      "zomatoPrice",
-      "swiggyPrice",
-    ],
-    "street-food": [
-      "id",
-      "name",
-      "lat",
-      "lng",
-      "location",
-      "rating",
-      "phone",
-      "timings",
-      "zomato",
-      "swiggy",
-      "zomatoPrice",
-      "swiggyPrice",
-    ],
-    "chill-cafes": [
-      "id",
-      "name",
-      "lat",
-      "lng",
-      "location",
-      "rating",
-      "phone",
-      "timings",
-      "zomato",
-      "swiggy",
-      "zomatoPrice",
-      "swiggyPrice",
-    ],
-    "night-cafes": [
-      "id",
-      "name",
-      "lat",
-      "lng",
-      "location",
-      "rating",
-      "phone",
-      "timings",
-      "zomato",
-      "swiggy",
-      "zomatoPrice",
-      "swiggyPrice",
-    ],
+    restaurants: ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
+    "street-food": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
+    "chill-cafes": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
+    "night-cafes": ["id", "name", "lat", "lng", "location", "rating", "phone", "timings", "zomato", "swiggy", "zomatoPrice", "swiggyPrice"],
   },
 
   medical: {
@@ -152,47 +58,10 @@ const fieldConfig = {
   },
 
   local: {
-    finance: [
-      "id",
-      "name",
-      "brand",
-      "amenity",
-      "lat",
-      "lon",
-      "address",
-      "opening_hours",
-    ],
-    groceries: [
-      "store_id",
-      "name",
-      "type",
-      "area",
-      "lat",
-      "lng",
-      "opening_hours",
-      "delivery",
-      "address",
-    ],
-    "local-markets": [
-      "market_id",
-      "name",
-      "type",
-      "area",
-      "lat",
-      "lng",
-      "opening_hours",
-      "address",
-    ],
-    "house-services": [
-      "id",
-      "name",
-      "type",
-      "area",
-      "lat",
-      "lng",
-      "opening_hours",
-      "phone",
-    ],
+    finance: ["id", "name", "brand", "amenity", "lat", "lon", "address", "opening_hours"],
+    groceries: ["store_id", "name", "type", "area", "lat", "lng", "opening_hours", "delivery", "address"],
+    "local-markets": ["market_id", "name", "type", "area", "lat", "lng", "opening_hours", "address"],
+    "house-services": ["id", "name", "type", "area", "lat", "lng", "opening_hours", "phone"],
   },
 
   accommodation: {
@@ -246,14 +115,14 @@ export default function Services() {
     try {
       setLoading(true);
 
-      // 🔥 Transportation from Firebase
+      // Transportation from Firebase
       if (category === "transportation") {
         const transportData = await fetchTransportData(type);
         setData(transportData);
         return;
       }
 
-      // 🔥 Rest from backend
+      // Rest from backend
       const url = type
         ? `${BASE_URL}/api/admin/data/${category}/${type}`
         : `${BASE_URL}/api/admin/data/${category}`;
@@ -340,7 +209,7 @@ export default function Services() {
     });
 
     try {
-      // 🔥 Transportation -> Firebase
+
       if (category === "transportation") {
         const result = await addTransportItem(type, item);
 
@@ -355,7 +224,7 @@ export default function Services() {
         return;
       }
 
-      // 🔥 Rest -> Backend
+
       const url = type
         ? `${BASE_URL}/api/admin/data/${category}/${type}`
         : `${BASE_URL}/api/admin/data/${category}`;
@@ -386,7 +255,7 @@ export default function Services() {
 
   const handleDelete = async (id) => {
     try {
-      // 🔥 Transportation -> Firebase
+
       if (category === "transportation") {
         const result = await deleteTransportItem(type, id);
 
@@ -399,7 +268,7 @@ export default function Services() {
         return;
       }
 
-      // 🔥 Rest -> Backend
+
       const url = type
         ? `${BASE_URL}/api/admin/data/${category}/${type}/${id}`
         : `${BASE_URL}/api/admin/data/${category}/${id}`;
@@ -466,14 +335,12 @@ export default function Services() {
                       setCategory(cat);
                       setFormData({});
                     }}
-                    className={`px-5 py-3 rounded-2xl mr-3 ${
-                      category === cat ? "bg-[#3C91E6]" : "bg-[#e8ebf2]"
-                    }`}
+                    className={`px-5 py-3 rounded-2xl mr-3 ${category === cat ? "bg-[#3C91E6]" : "bg-[#e8ebf2]"
+                      }`}
                   >
                     <Text
-                      className={`font-medium ${
-                        category === cat ? "text-white" : "text-gray-800"
-                      }`}
+                      className={`font-medium ${category === cat ? "text-white" : "text-gray-800"
+                        }`}
                     >
                       {cat}
                     </Text>
@@ -497,14 +364,12 @@ export default function Services() {
                         setType(t);
                         setFormData({});
                       }}
-                      className={`px-4 py-2 rounded-xl mr-2 ${
-                        type === t ? "bg-[#CDEB8B]" : "bg-[#eef1f6]"
-                      }`}
+                      className={`px-4 py-2 rounded-xl mr-2 ${type === t ? "bg-[#CDEB8B]" : "bg-[#eef1f6]"
+                        }`}
                     >
                       <Text
-                        className={`text-sm font-medium ${
-                          type === t ? "text-[#2E5E1A]" : "text-gray-700"
-                        }`}
+                        className={`text-sm font-medium ${type === t ? "text-[#2E5E1A]" : "text-gray-700"
+                          }`}
                       >
                         {t}
                       </Text>
@@ -605,8 +470,8 @@ export default function Services() {
                     category === "transportation"
                       ? transportFieldConfig[type] || []
                       : fieldConfig[category]?.[type] ||
-                        fieldConfig[category]?.default ||
-                        []
+                      fieldConfig[category]?.default ||
+                      []
                   ).map((field) => (
                     <TextInput
                       key={field}

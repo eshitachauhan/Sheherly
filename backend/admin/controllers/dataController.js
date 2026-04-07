@@ -30,7 +30,7 @@ export const getCategoryData = async (req, res) => {
     const rawData = fs.readFileSync(filePath, "utf-8");
     const jsonData = JSON.parse(rawData);
 
-    // 🔥 If subtype exists (food/restaurants etc.)
+
     if (type) {
       if (!jsonData[type]) {
         return res.status(404).json({ message: "Subtype not found" });
@@ -38,7 +38,7 @@ export const getCategoryData = async (req, res) => {
       return res.status(200).json(jsonData[type]);
     }
 
-    // 🔥 Special case for safety/police
+
     if (category === "safety" && jsonData.police) {
       return res.status(200).json(jsonData.police);
     }
@@ -66,7 +66,7 @@ export const deleteCategoryItem = async (req, res) => {
     const rawData = fs.readFileSync(filePath, "utf-8");
     const jsonData = JSON.parse(rawData);
 
-    // 🔥 Normal nested categories
+
     if (type && jsonData[type]) {
       const originalLength = jsonData[type].length;
       jsonData[type] = jsonData[type].filter((item) => item.id !== id);
@@ -76,7 +76,7 @@ export const deleteCategoryItem = async (req, res) => {
       }
     }
 
-    // 🔥 Special flat police category
+
     else if (category === "safety" && Array.isArray(jsonData.police)) {
       const originalLength = jsonData.police.length;
       jsonData.police = jsonData.police.filter((item) => item.id !== id);
@@ -119,12 +119,12 @@ export const addCategoryItem = async (req, res) => {
     const rawData = fs.readFileSync(filePath, "utf-8");
     const jsonData = JSON.parse(rawData);
 
-    // 🔥 Normal nested categories
+
     if (type && jsonData[type]) {
       jsonData[type].push(newItem);
     }
 
-    // 🔥 Special flat police category
+
     else if (category === "safety" && Array.isArray(jsonData.police)) {
       jsonData.police.push(newItem);
     }

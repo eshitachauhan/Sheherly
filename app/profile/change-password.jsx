@@ -46,7 +46,7 @@ export default function ChangePassword() {
         }),
       });
 
-      const data = await res.json(); // ✅ FIXED
+      const data = await res.json();
 
       if (!res.ok) {
         Alert.alert("Error", data.message || "Failed to update password");

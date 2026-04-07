@@ -22,7 +22,7 @@ export default function Result() {
     area = "Area",
   } = useLocalSearchParams();
 
-  // 🚌 BUS STATES
+  // BUS STATES
   const [allBuses, setAllBuses] = useState([]);
   const [buses, setBuses] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
@@ -30,52 +30,52 @@ export default function Result() {
   const [filter, setFilter] = useState("all");
   const [priceRange, setPriceRange] = useState(1000);
 
-  // 🚖 RICKSHAW STATES
+  // RICKSHAW STATES
   const [allRickshaws, setAllRickshaws] = useState([]);
   const [rickshaws, setRickshaws] = useState([]);
 
-  // 🛵 BIKE RENTALS
+  // BIKE RENTALS
   const [bikeRentals, setBikeRentals] = useState([]);
 
-  // ⏳ LOADING
+  // LOADING
   const [loading, setLoading] = useState(true);
 
-  // 🔥 FETCH DATA
+  // FETCH DATA
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // 🚖 RICKSHAW
+        // RICKSHAW
         if (type === "rickshaw") {
           const snapshot = await getDocs(collection(db, "erickshaws"));
           const data = snapshot.docs.map((doc) => ({
-  id: doc.id,
-  ...doc.data(),
-}));
+            id: doc.id,
+            ...doc.data(),
+          }));
           setAllRickshaws(data);
           setLoading(false);
           return;
         }
 
-        // 🛵 BIKE RENTALS
+        // BIKE RENTALS
         if (type === "bike-rentals") {
           const snapshot = await getDocs(collection(db, "bikeRentals"));
           const data = snapshot.docs.map((doc) => ({
-  id: doc.id,
-  ...doc.data(),
-}));
+            id: doc.id,
+            ...doc.data(),
+          }));
           setBikeRentals(data);
           setLoading(false);
           return;
         }
 
-        // 🚌 BUS
+        // BUS
         const snapshot = await getDocs(collection(db, "buses"));
         const data = snapshot.docs.map((doc) => ({
-  id: doc.id,
-  ...doc.data(),
-}));
+          id: doc.id,
+          ...doc.data(),
+        }));
 
         const filtered = data.filter(
           (bus) =>
@@ -95,7 +95,7 @@ export default function Result() {
     fetchData();
   }, [type, from, to]);
 
-  // 🚌 BUS FILTERS
+  // BUS FILTERS
   useEffect(() => {
     if (type === "rickshaw" || type === "bike-rentals") return;
 
@@ -112,7 +112,7 @@ export default function Result() {
     setBuses(updated);
   }, [filter, priceRange, allBuses, type]);
 
-  // 🚖 RICKSHAW FILTERS
+  // RICKSHAW FILTERS
   useEffect(() => {
     if (type !== "rickshaw") return;
 
@@ -139,9 +139,6 @@ export default function Result() {
     if (number) Linking.openURL(`tel:${number}`);
   };
 
-  // =========================================================
-  // 🚖 RICKSHAW LOADING
-  // =========================================================
   if (type === "rickshaw" && loading) {
     return (
       <View className="flex-1 bg-[#F0F4FF] justify-center items-center px-6">
@@ -158,9 +155,6 @@ export default function Result() {
     );
   }
 
-  // =========================================================
-  // 🛵 BIKE RENTALS LOADING
-  // =========================================================
   if (type === "bike-rentals" && loading) {
     return (
       <View className="flex-1 bg-[#F0F4FF] justify-center items-center px-6">
@@ -177,9 +171,6 @@ export default function Result() {
     );
   }
 
-  // =========================================================
-  // 🚌 BUS LOADING
-  // =========================================================
   if (type !== "rickshaw" && type !== "bike-rentals" && loading) {
     return (
       <View className="flex-1 bg-[#F0F4FF] justify-center items-center px-6">
@@ -196,9 +187,6 @@ export default function Result() {
     );
   }
 
-  // =========================================================
-  // 🚖 RICKSHAW UI
-  // =========================================================
   if (type === "rickshaw") {
     return (
       <View className="flex-1 bg-[#F0F4FF]">
@@ -314,9 +302,6 @@ export default function Result() {
     );
   }
 
-  // =========================================================
-  // 🛵 BIKE RENTALS UI
-  // =========================================================
   if (type === "bike-rentals") {
     return (
       <View className="flex-1 bg-[#F0F4FF]">
@@ -378,14 +363,12 @@ export default function Result() {
                   </Text>
 
                   <View
-                    className={`px-3 py-1 rounded-full ${
-                      item.available ? "bg-green-100" : "bg-red-100"
-                    }`}
+                    className={`px-3 py-1 rounded-full ${item.available ? "bg-green-100" : "bg-red-100"
+                      }`}
                   >
                     <Text
-                      className={`font-bold text-xs ${
-                        item.available ? "text-green-700" : "text-red-600"
-                      }`}
+                      className={`font-bold text-xs ${item.available ? "text-green-700" : "text-red-600"
+                        }`}
                     >
                       {item.available ? "Available" : "Not Available"}
                     </Text>
@@ -441,9 +424,6 @@ export default function Result() {
     );
   }
 
-  // =========================================================
-  // 🚌 BUS UI
-  // =========================================================
   return (
     <View className="flex-1 bg-[#F0F4FF]">
       <View
@@ -670,23 +650,21 @@ export default function Result() {
                 return (
                   <TouchableOpacity
                     key={busType}
-                    className={`py-3 px-6 rounded-full mr-3 border ${
-                      active
+                    className={`py-3 px-6 rounded-full mr-3 border ${active
                         ? "bg-indigo-50 border-[#4F6EF7]"
                         : "bg-white border-slate-200"
-                    }`}
+                      }`}
                     onPress={() => setFilter(busType)}
                   >
                     <Text
-                      className={`font-semibold text-[14px] ${
-                        active ? "text-[#4F6EF7]" : "text-slate-500"
-                      }`}
+                      className={`font-semibold text-[14px] ${active ? "text-[#4F6EF7]" : "text-slate-500"
+                        }`}
                     >
                       {busType === "all"
                         ? "All"
                         : busType === "ac"
-                        ? "AC"
-                        : "Non-AC"}
+                          ? "AC"
+                          : "Non-AC"}
                     </Text>
                   </TouchableOpacity>
                 );

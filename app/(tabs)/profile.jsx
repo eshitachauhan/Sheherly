@@ -27,7 +27,7 @@ export default function Profile() {
           const token = await SecureStore.getItemAsync("token");
 
           if (!token) {
-            setUser(null); // guest user
+            setUser(null);
             setLoading(false);
             return;
           }
@@ -62,26 +62,26 @@ export default function Profile() {
 
   const profileSections = isGuest
     ? [
-        {
-          title: "Account",
-          items: [{ label: "Email", value: "Add email" }],
-        },
-      ]
+      {
+        title: "Account",
+        items: [{ label: "Email", value: "Add email" }],
+      },
+    ]
     : [
-        {
-          title: "Personal Details",
-          items: [
-            { label: "Name", value: String(user?.name || "Add name") },
-            { label: "Email", value: String(user?.email || "Add email") },
-            { label: "Phone", value: String(user?.phone || "Add phone number") },
-          ],
-        },
-      ];
+      {
+        title: "Personal Details",
+        items: [
+          { label: "Name", value: String(user?.name || "Add name") },
+          { label: "Email", value: String(user?.email || "Add email") },
+          { label: "Phone", value: String(user?.phone || "Add phone number") },
+        ],
+      },
+    ];
 
   return (
     <SafeAreaView className="flex-1 bg-[#f6f7fb]">
       <ScrollView showsVerticalScrollIndicator={false}>
-        
+
         {/* Profile Avatar */}
         <View className="items-center mt-8 mb-6">
           <View className="w-24 h-24 rounded-full bg-blue-200 items-center justify-center">
@@ -152,16 +152,14 @@ export default function Profile() {
               <Link key={option.id} href={`/profile/${option.route}`} asChild>
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  className={`flex-row items-center p-4 rounded-2xl mb-4 shadow ${
-                    option.danger ? "bg-red-50" : "bg-white"
-                  }`}
+                  className={`flex-row items-center p-4 rounded-2xl mb-4 shadow ${option.danger ? "bg-red-50" : "bg-white"
+                    }`}
                 >
                   <Text className="text-2xl mr-4">{option.emoji}</Text>
 
                   <Text
-                    className={`flex-1 text-base font-semibold ${
-                      option.danger ? "text-red-600" : "text-gray-800"
-                    }`}
+                    className={`flex-1 text-base font-semibold ${option.danger ? "text-red-600" : "text-gray-800"
+                      }`}
                   >
                     {option.title}
                   </Text>

@@ -12,62 +12,18 @@ export default function Home() {
     >
 
       <View className="flex items-center justify-start pt-5">
-          <View className="bg-white w-full justify-center items-center flex flex-row p-1 border border-[#9fd5efff]"
-            style={{ borderRadius: 20 }}>
-            <Image source={logo} style={{ width: 200, height: 85 }} />
-          </View>
+        <View className="bg-white w-full justify-center items-center flex flex-row p-1 border border-[#9fd5efff]"
+          style={{ borderRadius: 20 }}>
+          <Image source={logo} style={{ width: 200, height: 85 }} />
         </View>
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false} >
 
-        {/* Transportation 
-        <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-blue-100">
-
-          <View className="flex flex-row items-center justify-between mb-3">
-            <TouchableOpacity onPress={() => router.push("/category/transportation")}>
-              <Text className="text-lg font-bold text-slate-800">Transportation</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/category/transportation")}>
-              <Text className="text-blue-400 text-sm font-medium">View All</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View className="flex flex-row justify-between">
-
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/transportation/bus")}>
-              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-                <Text className="text-2xl">🚌</Text>
-              </View>
-              <Text className="text-xs font-medium mt-1 text-slate-600">Bus</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/transportation/cab")}>
-              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-                <Text className="text-2xl">🚕</Text>
-              </View>
-              <Text className="text-xs font-medium mt-1 text-slate-600">Cab</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/transportation/rickshaw")}>
-              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-                <Text className="text-2xl">🛺</Text>
-              </View>
-              <Text className="text-xs font-medium mt-1 text-slate-600">Rickshaw</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="items-center" onPress={() => router.push("/category/transportation/bike-rentals")}>
-              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-                <Text className="text-2xl">🚲</Text>
-              </View>
-              <Text className="text-xs font-medium mt-1 text-slate-600">Bike Rentals</Text>
-            </TouchableOpacity>
-        </View>
-
-        </View>*/}
 
         {/* Food and Dining */}
         <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-amber-100">
-          
+
           <View className="flex flex-row items-center justify-between mb-3">
             <TouchableOpacity onPress={() => router.push("/category/food")}>
               <Text className="text-lg font-bold text-slate-800">Food and Dining</Text>
@@ -76,16 +32,16 @@ export default function Home() {
               <Text className="text-amber-600 text-sm font-medium">View All</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View className="flex flex-row justify-between">
-            
+
             <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/restaurants")}>
               <View className="w-14 h-14 bg-amber-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🍽️</Text>
               </View>
               <Text className="text-xs font-medium mt-1 text-slate-600">Restaurants</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity className="items-center" onPress={() => router.push("/category/food/street-food")}>
               <View className="w-14 h-14 bg-amber-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🌮</Text>
@@ -109,9 +65,9 @@ export default function Home() {
           </View>
         </View>
 
-         {/* Medical */}
+        {/* Medical */}
         <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-rose-100">
-          
+
           <View className="flex flex-row items-center justify-between mb-3">
             <TouchableOpacity onPress={() => router.push("/category/medical")}>
               <Text className="text-lg font-bold text-slate-800">Medical Services</Text>
@@ -122,7 +78,7 @@ export default function Home() {
           </View>
 
           <View className="flex flex-row justify-between">
-            
+
             <TouchableOpacity className="items-center" onPress={() => router.push("/category/medical/hospitals")}>
               <View className="w-14 h-14 bg-rose-100 rounded-2xl items-center justify-center shadow-sm">
                 <Text className="text-2xl">🏥</Text>
@@ -152,7 +108,7 @@ export default function Home() {
 
         {/* Accommodation */}
         <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-violet-100">
-          
+
           <View className="flex flex-row items-center justify-between mb-3">
             <TouchableOpacity onPress={() => router.push("/category/accommodation")}>
               <Text className="text-lg font-bold text-slate-800">Accommodation</Text>
@@ -161,7 +117,7 @@ export default function Home() {
               <Text className="text-violet-500 text-sm font-medium">View All</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View className="flex flex-row justify-between">
             <TouchableOpacity className="items-center" onPress={() => router.push("/category/accommodation/hotels")}>
               <View className="w-14 h-14 bg-violet-100 rounded-2xl items-center justify-center shadow-sm">
@@ -191,73 +147,73 @@ export default function Home() {
         </View>
 
         {/* Transportation */}
-<View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-blue-100">
-  <View className="flex flex-row items-center justify-between mb-3">
-    <TouchableOpacity onPress={() => router.push("/category/transportation")}>
-      <Text className="text-lg font-bold text-slate-800">Transportation</Text>
-    </TouchableOpacity>
+        <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-blue-100">
+          <View className="flex flex-row items-center justify-between mb-3">
+            <TouchableOpacity onPress={() => router.push("/category/transportation")}>
+              <Text className="text-lg font-bold text-slate-800">Transportation</Text>
+            </TouchableOpacity>
 
-    <TouchableOpacity onPress={() => router.push("/category/transportation")}>
-      <Text className="text-blue-400 text-sm font-medium">View All</Text>
-    </TouchableOpacity>
-  </View>
+            <TouchableOpacity onPress={() => router.push("/category/transportation")}>
+              <Text className="text-blue-400 text-sm font-medium">View All</Text>
+            </TouchableOpacity>
+          </View>
 
-  <View className="flex flex-row justify-between">
-    {/* Bus */}
-    <TouchableOpacity
-      className="items-center"
-      onPress={() =>
-        router.push({
-          pathname: "/category/transportation/search",
-          params: { type: "bus" },
-        })
-      }
-    >
-      <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-        <Text className="text-2xl">🚌</Text>
-      </View>
-      <Text className="text-xs font-medium mt-1 text-slate-600">Bus</Text>
-    </TouchableOpacity>
+          <View className="flex flex-row justify-between">
+            {/* Bus */}
+            <TouchableOpacity
+              className="items-center"
+              onPress={() =>
+                router.push({
+                  pathname: "/category/transportation/search",
+                  params: { type: "bus" },
+                })
+              }
+            >
+              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
+                <Text className="text-2xl">🚌</Text>
+              </View>
+              <Text className="text-xs font-medium mt-1 text-slate-600">Bus</Text>
+            </TouchableOpacity>
 
-    {/* Rickshaw */}
-    <TouchableOpacity
-      className="items-center"
-      onPress={() =>
-        router.push({
-          pathname: "/category/transportation/search",
-          params: { type: "rickshaw" },
-        })
-      }
-    >
-      <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-        <Text className="text-2xl">🛺</Text>
-      </View>
-      <Text className="text-xs font-medium mt-1 text-slate-600">Rickshaw</Text>
-    </TouchableOpacity>
+            {/* Rickshaw */}
+            <TouchableOpacity
+              className="items-center"
+              onPress={() =>
+                router.push({
+                  pathname: "/category/transportation/search",
+                  params: { type: "rickshaw" },
+                })
+              }
+            >
+              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
+                <Text className="text-2xl">🛺</Text>
+              </View>
+              <Text className="text-xs font-medium mt-1 text-slate-600">Rickshaw</Text>
+            </TouchableOpacity>
 
-    {/* Bike Rentals */}
-    <TouchableOpacity
-      className="items-center"
-      onPress={() =>
-        router.push({
-          pathname: "/category/transportation/search",
-          params: { type: "bike-rentals" },
-        })
-      }
-    >
-      <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
-        <Text className="text-2xl">🚲</Text>
-      </View>
-      <Text className="text-xs font-medium mt-1 text-slate-600">
-        Bike Rentals
-      </Text>
-    </TouchableOpacity>
-  </View>
-</View>
+            {/* Bike Rentals */}
+            <TouchableOpacity
+              className="items-center"
+              onPress={() =>
+                router.push({
+                  pathname: "/category/transportation/search",
+                  params: { type: "bike-rentals" },
+                })
+              }
+            >
+              <View className="w-14 h-14 bg-blue-100 rounded-2xl items-center justify-center shadow-sm">
+                <Text className="text-2xl">🚲</Text>
+              </View>
+              <Text className="text-xs font-medium mt-1 text-slate-600">
+                Bike Rentals
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* Local Services */}
         <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-cyan-100">
-          
+
           <View className="flex flex-row items-center justify-between mb-3">
             <TouchableOpacity onPress={() => router.push("/category/localServices")}>
               <Text className="text-lg font-bold text-slate-800">Local Services</Text>
@@ -266,7 +222,7 @@ export default function Home() {
               <Text className="text-cyan-600 text-sm font-medium">View All</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View className="flex flex-row justify-between">
             <TouchableOpacity className="items-center" onPress={() => router.push("/category/localServices/finance")}>
               <View className="w-14 h-14 bg-cyan-100 rounded-2xl items-center justify-center shadow-sm">
@@ -295,11 +251,11 @@ export default function Home() {
           </View>
         </View>
 
-        
+
 
         {/* Famous spots */}
         <View className="w-11/12 mt-6 self-center bg-white rounded-xl p-4 shadow-md border border-yellow-100">
-          
+
           <View className="flex flex-row items-center justify-between mb-3">
             <TouchableOpacity onPress={() => router.push("/category/famousSpots")}>
               <Text className="text-lg font-bold text-slate-800">Famous Spots</Text>
@@ -308,7 +264,7 @@ export default function Home() {
               <Text className="text-yellow-600 text-sm font-medium">View All</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View className="flex flex-row justify-between">
 
             <TouchableOpacity className="items-center" onPress={() => router.push("/category/famousSpots/parks-gardens")}>
@@ -340,14 +296,12 @@ export default function Home() {
 
         {/* Safety and Police */}
         <View className="w-11/12 mt-6 mb-10 self-center bg-white rounded-xl p-4 shadow-md border border-red-300">
-          
+
           <View className="flex flex items-center justify-between mb-3">
             <TouchableOpacity onPress={() => router.push("/category/safety")}>
               <Text className="text-xl font-bold text-slate-800">🚨 Safety</Text>
             </TouchableOpacity>
-            {/*<TouchableOpacity onPress={() => router.push("/category/safety")}>
-              <Text className="text-red-600 text-sm font-medium">View all</Text>
-            </TouchableOpacity>*/}
+
           </View>
         </View>
 
