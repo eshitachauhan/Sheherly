@@ -79,20 +79,6 @@
       "timings": "6:30 PM - 11 PM",
       "zomato": "https://www.zomato.com/jaipur/suvarna-mahal-rambagh-palace-c-scheme",
       "zomatoPrice": "₹5000 for two"
-    },
-    {
-      "id": "r7",
-      "name": "1135 AD",
-      "lat": 26.9855,
-      "lng": 75.8513,
-      "location": "Amer Fort",
-      "rating": 4.6,
-      "phone": "09928033333",
-      "timings": "7 PM - 11 PM",
-      "zomato": "https://www.zomato.com/jaipur/1135-ad-amer",
-      "swiggy": "https://www.swiggy.com/restaurants/1135-ad-pink-city-jaipur-742995/dineout",
-      "zomatoPrice": "₹3000 for two",
-      "swiggyPrice": "₹2800 for two"
     }
   ],
   "street-food": [

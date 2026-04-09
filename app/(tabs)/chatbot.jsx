@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
-const API_URL = "http://10.231.186.250:8001/chat";
+const API_URL = "http://10.224.117.139:8001/chat";
 
 export default function ChatbotScreen() {
   const [messages, setMessages] = useState([]);

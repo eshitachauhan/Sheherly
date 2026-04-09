@@ -12,7 +12,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
 
-const BASE_URL = "http://10.231.186.250:9000";
+const BASE_URL = "http://10.224.117.139:9000";
 
 export default function MedicalTypePage() {
   const { type } = useLocalSearchParams();

@@ -9,21 +9,24 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import * as SecureStore from "expo-secure-store";
 const logo = require("../assets/images/sheherlyTitle.png");
 
 export default function Index() {
   const router = useRouter();
 
   const handleGuestUser = async () => {
-    try {
-      await AsyncStorage.removeItem("token"); // clear old login
-      router.replace("/home");
-    } catch (error) {
-      console.log("Guest login error:", error);
-      router.push("/home");
-    }
-  };
+  try {
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("user");
+    await SecureStore.deleteItemAsync("token");
+
+    router.replace("/home");
+  } catch (error) {
+    console.log("Guest login error:", error);
+    router.push("/home");
+  }
+};
 
   return (
     <SafeAreaView className="bg-[white] flex-1">

@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-const BASE_URL = "http://10.231.186.250:8000";
+const BASE_URL = "http://10.224.117.139:5000";
 
 const settingsOptions = [
   { id: "1", title: "Edit Profile", emoji: "✏️", route: "edit" },
@@ -35,6 +35,14 @@ export default function Profile() {
           const res = await fetch(`${BASE_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+
+          if (!res.ok) {
+            setUser(null);
+            await AsyncStorage.removeItem("token");
+            await AsyncStorage.removeItem("user");
+            await SecureStore.deleteItemAsync("token");
+            return;
+          }
 
           const data = await res.json();
           setUser(data);

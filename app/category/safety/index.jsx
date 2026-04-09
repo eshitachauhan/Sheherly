@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 
-const BASE_URL = "http://10.231.186.250:9000"; 
+const BASE_URL = "http://10.224.117.139:9000"; 
 
 const emergencyServices = [
   { id: "1", title: "Police", number: "100", emoji: "🚓", desc: "Report crime or danger", color: "#e53935" },
