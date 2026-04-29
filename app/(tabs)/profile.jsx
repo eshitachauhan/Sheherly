@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-const BASE_URL = "http://10.224.117.139:5000";
+const BASE_URL = "http://10.253.101.139:5000";
 
 const settingsOptions = [
   { id: "1", title: "Edit Profile", emoji: "✏️", route: "edit" },

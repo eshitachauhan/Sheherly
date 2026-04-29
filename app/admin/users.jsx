@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const BASE_URL = "http://10.224.117.139:5000";
+const BASE_URL = "http://10.253.101.139:5000";
 
 export default function Users() {
   const [users, setUsers] = useState([]);

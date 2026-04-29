@@ -4,7 +4,7 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-const BASE_URL = "http://10.224.117.139:5000";
+const BASE_URL = "http://10.253.101.139:5000";
 
 export default function DeleteAccount() {
   const [confirmText, setConfirmText] = useState("");

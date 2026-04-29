@@ -22,7 +22,7 @@ import {
   deleteTransportItem,
 } from "../../utils/transportAdmin";
 
-const BASE_URL = "http://10.224.117.139:9000";
+const BASE_URL = "http://10.253.101.139:9000";
 
 const categories = {
   food: ["restaurants", "street-food", "chill-cafes", "night-cafes"],

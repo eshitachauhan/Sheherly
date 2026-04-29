@@ -2,7 +2,7 @@ import { View, TextInput, FlatList, Pressable, Text, Alert, ActivityIndicator } 
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 
-const BACKEND_URL = "http://10.224.117.139:7000";
+const BACKEND_URL = "http://10.253.101.139:7000";
 
 export default function Search() {
   const router = useRouter();
