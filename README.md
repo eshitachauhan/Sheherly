@@ -9,7 +9,7 @@ A React Native (Expo) mobile app that helps tourists and locals explore Jaipur. 
 <p align="center">
   <img src="assets/APP_IMG/1.png" width="22%" alt="Screen 1" />
   &nbsp;
-  <img src="assets/APP_IMG/2.1.png" width="22%" alt="Screen 2.1" />
+  <img src="assets/APP_IMG/2_1.png" width="22%" alt="Screen 2_1" />
   &nbsp;
   <img src="assets/APP_IMG/2.png" width="22%" alt="Screen 2" />
   &nbsp;
