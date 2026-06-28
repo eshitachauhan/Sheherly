@@ -16,10 +16,9 @@ import { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Onboarding, { shouldShowOnboarding } from "../components/Onboarding";
-const logo = require("../assets/images/sheherlyTitle.png");
+import { LAST_USER_KEY, CACHED_PROFILE_KEY } from "../constants/storageKeys";
 
-export const LAST_USER_KEY = "sheherly_last_user_uid";
-export const CACHED_PROFILE_KEY = "sheherly_cached_profile";
+const logo = require("../assets/images/sheherlyTitle.png");
 
 export default function Index() {
   const router = useRouter();
@@ -29,25 +28,31 @@ export default function Index() {
 
   useEffect(() => {
     const bootstrap = async () => {
+      // ── Step 1: Check AsyncStorage FIRST (instant, no network needed) ──
+      // If we have a saved UID, the user was signed in last session.
+      // Send them straight to home regardless of network state.
+      const lastUid = await AsyncStorage.getItem(LAST_USER_KEY);
+      if (lastUid) {
+        setRedirecting(true);
+        router.replace("/home");
+        return;
+      }
+
+      // ── Step 2: No saved session — check network then Firebase ──
       const net = await NetInfo.fetch();
       const isOnline = net.isConnected && net.isInternetReachable !== false;
 
       if (!isOnline) {
-        // Offline — if user was previously signed in, go straight to home
-        const lastUid = await AsyncStorage.getItem(LAST_USER_KEY);
-        if (lastUid) {
-          setRedirecting(true);
-          router.replace("/home");
-        } else {
-          setChecking(false);
-        }
+        // Offline and no saved session → show welcome page
+        setChecking(false);
         return;
       }
 
+      // ── Step 3: Online, no cached session — check Firebase auth state ──
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         unsubscribe();
         if (user) {
-          // Persist UID and cache profile for offline use
+          // Save UID and profile for future offline use
           await AsyncStorage.setItem(LAST_USER_KEY, user.uid);
           try {
             const snap = await getDoc(doc(db, "users", user.uid));
@@ -56,14 +61,17 @@ export default function Index() {
                 CACHED_PROFILE_KEY,
                 JSON.stringify({ uid: user.uid, email: user.email, ...snap.data() })
               );
+            } else {
+              await AsyncStorage.setItem(
+                CACHED_PROFILE_KEY,
+                JSON.stringify({ uid: user.uid, email: user.email })
+              );
             }
           } catch (_) {}
           setRedirecting(true);
           router.replace("/home");
         } else {
-          await AsyncStorage.removeItem(LAST_USER_KEY);
-          await AsyncStorage.removeItem(CACHED_PROFILE_KEY);
-          // Check if first time user
+          // No Firebase user — show onboarding or welcome
           const needsOnboarding = await shouldShowOnboarding();
           setShowOnboarding(needsOnboarding);
           setChecking(false);
@@ -84,14 +92,12 @@ export default function Index() {
     );
   }
 
-  // Show onboarding for first-time users
   if (showOnboarding) {
     return <Onboarding onDone={() => setShowOnboarding(false)} />;
   }
 
   const handleGuestUser = async () => {
     try {
-      // Sign out of Firebase so profile shows as guest
       if (auth.currentUser) {
         await signOut(auth);
       }

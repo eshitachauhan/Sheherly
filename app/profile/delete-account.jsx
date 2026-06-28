@@ -10,6 +10,8 @@ import {
 import { doc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LAST_USER_KEY, CACHED_PROFILE_KEY } from "../../constants/storageKeys";
 
 export default function DeleteAccount() {
   const [password, setPassword] = useState("");
@@ -44,6 +46,10 @@ export default function DeleteAccount() {
 
       // Delete Firestore profile doc
       await deleteDoc(doc(db, "users", user.uid));
+
+      // Clear local session
+      await AsyncStorage.removeItem(LAST_USER_KEY);
+      await AsyncStorage.removeItem(CACHED_PROFILE_KEY);
 
       // Delete Firebase Auth account
       await deleteUser(user);

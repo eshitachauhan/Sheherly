@@ -9,6 +9,8 @@ import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import validationSchema from "../../utils/authSchema";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LAST_USER_KEY, CACHED_PROFILE_KEY } from "../../constants/storageKeys";
 
 const logo = require("../../assets/images/sheherlyTitle.png");
 
@@ -54,6 +56,12 @@ const Signin = () => {
       if (data.role === "admin") {
         router.replace("/admin/dashboard");
       } else {
+        // Save session for offline access
+        await AsyncStorage.setItem(LAST_USER_KEY, user.uid);
+        await AsyncStorage.setItem(
+          CACHED_PROFILE_KEY,
+          JSON.stringify({ uid: user.uid, email: user.email, ...data })
+        );
         router.replace("/home");
       }
     } catch (err) {

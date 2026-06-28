@@ -7,7 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
-import { CACHED_PROFILE_KEY } from "../index";
+import { LAST_USER_KEY, CACHED_PROFILE_KEY } from "../../constants/storageKeys";
 import Toast from "../../components/Toast";
 import * as Haptics from "expo-haptics";
 

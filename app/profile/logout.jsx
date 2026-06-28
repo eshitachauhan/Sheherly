@@ -3,16 +3,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LAST_USER_KEY, CACHED_PROFILE_KEY } from "../../constants/storageKeys";
 
 export default function Logout() {
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
+      // Clear stored session so offline check won't bypass welcome page
+      await AsyncStorage.removeItem(LAST_USER_KEY);
+      await AsyncStorage.removeItem(CACHED_PROFILE_KEY);
       await signOut(auth);
       router.replace("/");
     } catch (error) {
       console.log("Logout error:", error);
+      router.replace("/");
     }
   };
 
