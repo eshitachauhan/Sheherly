@@ -1,51 +1,76 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus";
+import { CACHED_PROFILE_KEY } from "../index";
+import Toast from "../../components/Toast";
 import * as Haptics from "expo-haptics";
 
 const settingsOptions = [
-  { id: "1", title: "Edit Profile", route: "edit" },
-  { id: "2", title: "Change Password", route: "change-password" },
-  { id: "3", title: "Saved Places", route: "/(tabs)/offline" },
-  { id: "4", title: "Delete Account", route: "delete-account" },
-  { id: "5", title: "Logout", route: "logout", danger: true },
+  { id: "1", title: "Edit Profile", route: "edit", needsOnline: true },
+  { id: "2", title: "Change Password", route: "change-password", needsOnline: true },
+  { id: "3", title: "Saved Places", route: "/(tabs)/offline", needsOnline: false },
+  { id: "4", title: "Delete Account", route: "delete-account", needsOnline: true },
+  { id: "5", title: "Logout", route: "logout", danger: true, needsOnline: false },
 ];
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState({ visible: false, message: "", type: "info" });
   const router = useRouter();
+  const { isOnline } = useNetworkStatus();
+
+  const showToast = (message, type = "info") => {
+    setToast({ visible: true, message, type });
+  };
 
   useEffect(() => {
-    // onAuthStateChanged is the only reliable way to detect logout
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (!firebaseUser) {
-        setUser(null);
+    const loadProfile = async () => {
+      if (!isOnline) {
+        // Offline — load from cache
+        try {
+          const cached = await AsyncStorage.getItem(CACHED_PROFILE_KEY);
+          if (cached) {
+            setUser(JSON.parse(cached));
+          }
+        } catch (_) {}
         setLoading(false);
         return;
       }
-      try {
-        const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-        if (snap.exists()) {
-          setUser({ uid: firebaseUser.uid, email: firebaseUser.email, ...snap.data() });
-        } else {
-          setUser({ uid: firebaseUser.uid, email: firebaseUser.email });
-        }
-      } catch (err) {
-        console.log("PROFILE FETCH ERROR:", err);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    });
 
-    return unsubscribe; // cleanup listener on unmount
-  }, []);
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!firebaseUser) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        try {
+          const snap = await getDoc(doc(db, "users", firebaseUser.uid));
+          const profileData = snap.exists()
+            ? { uid: firebaseUser.uid, email: firebaseUser.email, ...snap.data() }
+            : { uid: firebaseUser.uid, email: firebaseUser.email };
+          setUser(profileData);
+          // Keep cache fresh
+          await AsyncStorage.setItem(CACHED_PROFILE_KEY, JSON.stringify(profileData));
+        } catch (err) {
+          console.log("PROFILE FETCH ERROR:", err);
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      return unsubscribe;
+    };
+
+    loadProfile();
+  }, [isOnline]);
 
   if (loading) {
     return (
@@ -72,7 +97,41 @@ export default function Profile() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#f6f7fb]">
+      <Toast
+        message={toast.message}
+        visible={toast.visible}
+        type={toast.type}
+        onHide={() => setToast((t) => ({ ...t, visible: false }))}
+      />
+
       <ScrollView showsVerticalScrollIndicator={false}>
+
+        {/* Offline banner */}
+        {!isOnline && (
+          <View style={{
+            backgroundColor: "#fff7ed",
+            borderColor: "#fb923c",
+            borderWidth: 1,
+            marginHorizontal: 16,
+            marginTop: 12,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+          }}>
+            <Text style={{ fontSize: 18 }}>📡</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: "#9a3412", fontWeight: "700", fontSize: 13 }}>
+                No Internet Connection
+              </Text>
+              <Text style={{ color: "#c2410c", fontSize: 12, marginTop: 2 }}>
+                Profile is read-only. Only Saved Places works offline.
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Avatar */}
         <View className="items-center mt-8 mb-6">
@@ -86,6 +145,9 @@ export default function Profile() {
           <Text className="text-lg font-semibold mt-3 text-gray-800">
             {isGuest ? "Guest User" : user?.name || "User"}
           </Text>
+          {!isOnline && !isGuest && (
+            <Text className="text-xs text-orange-500 mt-1">Viewing cached profile</Text>
+          )}
         </View>
 
         {/* Profile Details */}
@@ -106,11 +168,15 @@ export default function Profile() {
                     <Text className="text-sm text-gray-500">{item.label}</Text>
                     {isAdd ? (
                       <TouchableOpacity
-                        onPress={() =>
+                        onPress={() => {
+                          if (!isOnline) {
+                            showToast("Internet required to edit profile", "error");
+                            return;
+                          }
                           item.label === "Email"
                             ? router.push("/signin")
-                            : router.push("/profile/edit")
-                        }
+                            : router.push("/profile/edit");
+                        }}
                       >
                         <Text className="text-sm font-semibold text-blue-500">{valueStr}</Text>
                       </TouchableOpacity>
@@ -147,36 +213,53 @@ export default function Profile() {
 
         {/* Settings */}
         {!isGuest && (
-          <View className="mx-6">
+          <View className="mx-6 mb-10">
             <Text className="text-base font-bold text-gray-800 mb-3">Settings</Text>
             {settingsOptions.map((option) => {
               const isExternal = option.route.startsWith("/");
-              const content = (
+              const isDisabledOffline = !isOnline && option.needsOnline;
+
+              return (
                 <TouchableOpacity
                   key={option.id}
-                  activeOpacity={0.8}
+                  activeOpacity={isDisabledOffline ? 1 : 0.8}
                   onPress={() => {
+                    if (isDisabledOffline) {
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                      showToast("Internet required for this action", "error");
+                      return;
+                    }
                     Haptics.selectionAsync();
                     isExternal
                       ? router.push(option.route)
                       : router.push(`/profile/${option.route}`);
                   }}
                   className={`flex-row items-center p-4 rounded-2xl mb-4 shadow ${
-                    option.danger ? "bg-red-50" : "bg-white"
+                    option.danger
+                      ? "bg-red-50"
+                      : isDisabledOffline
+                      ? "bg-gray-100"
+                      : "bg-white"
                   }`}
                 >
-                  <Text className="text-2xl mr-4">{option.emoji}</Text>
                   <Text
                     className={`flex-1 text-base font-semibold ${
-                      option.danger ? "text-red-600" : "text-gray-800"
+                      option.danger
+                        ? "text-red-600"
+                        : isDisabledOffline
+                        ? "text-gray-400"
+                        : "text-gray-800"
                     }`}
                   >
                     {option.title}
                   </Text>
-                  <Text className="text-gray-400 text-xl">›</Text>
+                  {isDisabledOffline ? (
+                    <Text className="text-xs text-orange-400 font-medium">🔒 Offline</Text>
+                  ) : (
+                    <Text className="text-gray-400 text-xl">›</Text>
+                  )}
                 </TouchableOpacity>
               );
-              return content;
             })}
           </View>
         )}

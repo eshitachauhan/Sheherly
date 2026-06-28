@@ -8,14 +8,20 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { auth } from "../../firebase";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 
 export default function ChangePassword() {
   const router = useRouter();
+  const { isOnline } = useNetworkStatus();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChangePassword = async () => {
+    if (!isOnline) {
+      Alert.alert("No Internet", "You need internet connection to change your password.");
+      return;
+    }
     if (!currentPassword || !newPassword || !confirmPassword) {
       Alert.alert("Error", "All fields are required");
       return;
@@ -64,6 +70,26 @@ export default function ChangePassword() {
   return (
     <SafeAreaView className="flex-1 bg-[#f6f7fb] px-6 pt-6">
       <Text className="text-xl font-bold text-gray-800 mb-6">Change Password</Text>
+
+      {!isOnline && (
+        <View style={{
+          backgroundColor: "#fff7ed",
+          borderColor: "#fb923c",
+          borderWidth: 1,
+          borderRadius: 12,
+          paddingHorizontal: 14,
+          paddingVertical: 10,
+          marginBottom: 16,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+        }}>
+          <Text style={{ fontSize: 16 }}>📡</Text>
+          <Text style={{ color: "#9a3412", fontSize: 13, flex: 1 }}>
+            You're offline. Internet is required to change your password.
+          </Text>
+        </View>
+      )}
 
       <TextInput
         placeholder="Current Password"

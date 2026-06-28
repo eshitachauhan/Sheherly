@@ -9,13 +9,19 @@ import {
 } from "firebase/auth";
 import { doc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 
 export default function DeleteAccount() {
   const [password, setPassword] = useState("");
   const [confirmText, setConfirmText] = useState("");
   const router = useRouter();
+  const { isOnline } = useNetworkStatus();
 
   const handleDelete = async () => {
+    if (!isOnline) {
+      Alert.alert("No Internet", "You need internet connection to delete your account.");
+      return;
+    }
     if (confirmText !== "DELETE") {
       Alert.alert("Error", "Type DELETE to confirm");
       return;

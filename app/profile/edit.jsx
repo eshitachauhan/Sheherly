@@ -8,10 +8,12 @@ import { useRouter } from "expo-router";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import Toast from "../../components/Toast";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 import * as Haptics from "expo-haptics";
 
 export default function EditProfile() {
   const router = useRouter();
+  const { isOnline } = useNetworkStatus();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,11 @@ export default function EditProfile() {
   }, []);
 
   const handleSave = async () => {
+    if (!isOnline) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      showToast("Internet required to save changes", "error");
+      return;
+    }
     try {
       setLoading(true);
       const user = auth.currentUser;
@@ -70,6 +77,26 @@ export default function EditProfile() {
       />
       <ScrollView className="mx-6 mt-6" contentContainerStyle={{ paddingBottom: 40 }}>
         <Text className="text-xl font-bold text-gray-800 mb-6">Edit Profile</Text>
+
+        {!isOnline && (
+          <View style={{
+            backgroundColor: "#fff7ed",
+            borderColor: "#fb923c",
+            borderWidth: 1,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            marginBottom: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+          }}>
+            <Text style={{ fontSize: 16 }}>📡</Text>
+            <Text style={{ color: "#9a3412", fontSize: 13, flex: 1 }}>
+              You're offline. Connect to internet to save changes.
+            </Text>
+          </View>
+        )}
 
         {/* Name */}
         <View className="mb-4">

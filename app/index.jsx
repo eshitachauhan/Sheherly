@@ -10,14 +10,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Onboarding, { shouldShowOnboarding } from "../components/Onboarding";
 const logo = require("../assets/images/sheherlyTitle.png");
 
-const LAST_USER_KEY = "sheherly_last_user_uid";
+export const LAST_USER_KEY = "sheherly_last_user_uid";
+export const CACHED_PROFILE_KEY = "sheherly_cached_profile";
 
 export default function Index() {
   const router = useRouter();
@@ -31,6 +33,7 @@ export default function Index() {
       const isOnline = net.isConnected && net.isInternetReachable !== false;
 
       if (!isOnline) {
+        // Offline — if user was previously signed in, go straight to home
         const lastUid = await AsyncStorage.getItem(LAST_USER_KEY);
         if (lastUid) {
           setRedirecting(true);
@@ -44,11 +47,22 @@ export default function Index() {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         unsubscribe();
         if (user) {
+          // Persist UID and cache profile for offline use
           await AsyncStorage.setItem(LAST_USER_KEY, user.uid);
+          try {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+              await AsyncStorage.setItem(
+                CACHED_PROFILE_KEY,
+                JSON.stringify({ uid: user.uid, email: user.email, ...snap.data() })
+              );
+            }
+          } catch (_) {}
           setRedirecting(true);
           router.replace("/home");
         } else {
           await AsyncStorage.removeItem(LAST_USER_KEY);
+          await AsyncStorage.removeItem(CACHED_PROFILE_KEY);
           // Check if first time user
           const needsOnboarding = await shouldShowOnboarding();
           setShowOnboarding(needsOnboarding);
