@@ -31,21 +31,40 @@ export default function Profile() {
   };
 
   useEffect(() => {
+    let unsubscribe = () => {};
+
     const loadProfile = async () => {
+      setLoading(true);
+
       if (!isOnline) {
-        // Offline — load from cache
+        // Fully offline — load from AsyncStorage cache only, never touch Firebase
         try {
           const cached = await AsyncStorage.getItem(CACHED_PROFILE_KEY);
           if (cached) {
             setUser(JSON.parse(cached));
+          } else {
+            setUser(null);
           }
-        } catch (_) {}
+        } catch (_) {
+          setUser(null);
+        }
         setLoading(false);
         return;
       }
 
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // Online — use Firebase auth listener
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (!firebaseUser) {
+          // Firebase says no user — but double-check cache before showing Guest
+          // (handles brief network blips where Firebase resolves before network is stable)
+          try {
+            const cached = await AsyncStorage.getItem(CACHED_PROFILE_KEY);
+            if (cached) {
+              setUser(JSON.parse(cached));
+              setLoading(false);
+              return;
+            }
+          } catch (_) {}
           setUser(null);
           setLoading(false);
           return;
@@ -60,16 +79,19 @@ export default function Profile() {
           await AsyncStorage.setItem(CACHED_PROFILE_KEY, JSON.stringify(profileData));
         } catch (err) {
           console.log("PROFILE FETCH ERROR:", err);
-          setUser(null);
+          // Network error — fall back to cache
+          try {
+            const cached = await AsyncStorage.getItem(CACHED_PROFILE_KEY);
+            if (cached) setUser(JSON.parse(cached));
+          } catch (_) {}
         } finally {
           setLoading(false);
         }
       });
-
-      return unsubscribe;
     };
 
     loadProfile();
+    return () => unsubscribe();
   }, [isOnline]);
 
   if (loading) {
