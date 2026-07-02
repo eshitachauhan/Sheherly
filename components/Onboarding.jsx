@@ -8,47 +8,52 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  FlatList,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 const ONBOARDING_KEY = "sheherly_onboarding_done";
 
+// Each slide's bg color is sampled from the actual image background
 const slides = [
   {
     id: "1",
     image: require("../assets/images/intro1.png"),
-    title: "Explore Jaipur Like a Local",
+    title: "Explore Jaipur\nLike a Local",
     subtitle:
-      "Discover the best food, stays, transport, and hidden gems — all in one app.",
+      "Discover the best food, stays, transport,\nand hidden gems — all in one app.",
     accent: "#085a73",
-    bg: "#e8f4f8",
+    bg: "#cde8f0",       // matches intro1 blue-teal background
   },
   {
     id: "2",
     image: require("../assets/images/intro2.png"),
     title: "PG? Flat? Hostel?\nI got you homie!",
     subtitle:
-      "Find the perfect accommodation — from budget hostels to cozy flats — near you.",
+      "Find the perfect accommodation — from\nbudget hostels to cozy flats — near you.",
     accent: "#218fb4",
-    bg: "#eef6fa",
+    bg: "#c9e8ef",       // matches intro2 light blue-green background
   },
   {
     id: "3",
     image: require("../assets/images/intro3.png"),
-    title: "Your AI Guide to the City",
+    title: "Your AI Guide\nto the City",
     subtitle:
-      "Ask our chatbot anything about Jaipur — routes, timings, tips and more.",
+      "Ask our chatbot anything about Jaipur —\nroutes, timings, tips and more.",
     accent: "#085a73",
-    bg: "#e8f4f8",
+    bg: "#cde8f0",       // matches intro3 background
   },
 ];
 
+const BOTTOM_H = height * 0.36;
+const IMAGE_H = height - BOTTOM_H;
+
 export default function Onboarding({ onDone }) {
   const [current, setCurrent] = useState(0);
-  const flatListRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef(null);
+
+  const slide = slides[current];
 
   const finish = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, "true");
@@ -67,43 +72,30 @@ export default function Onboarding({ onDone }) {
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
-      setCurrent(viewableItems[0].index);
+      setCurrent(viewableItems[0].index ?? 0);
     }
   }).current;
 
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
-
-  const slide = slides[current];
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
 
   const renderItem = ({ item }) => (
-    <View style={[styles.slide, { width, backgroundColor: item.bg }]}>
-      {/* Illustration area */}
-      <View style={styles.illustrationContainer}>
-        <Image
-          source={item.image}
-          style={styles.illustration}
-          resizeMode="contain"
-        />
-      </View>
+    <View style={{ width, height: IMAGE_H, backgroundColor: item.bg }}>
+      <Image
+        source={item.image}
+        style={{ width, height: IMAGE_H }}
+        resizeMode="cover"
+      />
     </View>
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: slide.bg }]}>
+    <View style={styles.root}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      {/* App name at top */}
-      <View style={styles.topBar}>
-        <Text style={[styles.appName, { color: slide.accent }]}>Sheherly</Text>
-        {current < slides.length - 1 && (
-          <TouchableOpacity onPress={finish} style={styles.skipBtn}>
-            <Text style={[styles.skipText, { color: slide.accent }]}>Skip</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Swipeable slides */}
-      <FlatList
+      {/* ── Full-screen image pager ── */}
+      <Animated.FlatList
         ref={flatListRef}
         data={slides}
         renderItem={renderItem}
@@ -111,34 +103,51 @@ export default function Onboarding({ onDone }) {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
         )}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        scrollEventThrottle={16}
-        style={styles.flatList}
+        style={{ height: IMAGE_H }}
+        getItemLayout={(_, index) => ({
+          length: width,
+          offset: width * index,
+          index,
+        })}
       />
 
-      {/* Bottom card */}
-      <View style={styles.bottomCard}>
-        {/* Text content */}
+      {/* ── Top bar overlay (on top of image) ── */}
+      <View style={styles.topBar}>
+        <Text style={[styles.appName, { color: "#fff" }]}>Sheherly</Text>
+        {current < slides.length - 1 && (
+          <TouchableOpacity onPress={finish} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* ── Bottom card — bg matches current slide ── */}
+      <View style={[styles.bottomCard, { backgroundColor: slide.bg }]}>
+        {/* Title */}
         <Text style={[styles.title, { color: slide.accent }]}>{slide.title}</Text>
+
+        {/* Subtitle */}
         <Text style={styles.subtitle}>{slide.subtitle}</Text>
 
         {/* Dots */}
         <View style={styles.dotsRow}>
-          {slides.map((_, i) => {
+          {slides.map((s, i) => {
             const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
             const dotWidth = scrollX.interpolate({
               inputRange,
               outputRange: [8, 28, 8],
               extrapolate: "clamp",
             });
-            const dotOpacity = scrollX.interpolate({
+            const opacity = scrollX.interpolate({
               inputRange,
-              outputRange: [0.35, 1, 0.35],
+              outputRange: [0.3, 1, 0.3],
               extrapolate: "clamp",
             });
             return (
@@ -146,18 +155,14 @@ export default function Onboarding({ onDone }) {
                 key={i}
                 style={[
                   styles.dot,
-                  {
-                    width: dotWidth,
-                    opacity: dotOpacity,
-                    backgroundColor: slide.accent,
-                  },
+                  { width: dotWidth, opacity, backgroundColor: slide.accent },
                 ]}
               />
             );
           })}
         </View>
 
-        {/* CTA button */}
+        {/* Button */}
         <TouchableOpacity
           onPress={goNext}
           style={[styles.btn, { backgroundColor: slide.accent }]}
@@ -172,88 +177,64 @@ export default function Onboarding({ onDone }) {
   );
 }
 
-const BOTTOM_HEIGHT = height * 0.38;
-
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
+    backgroundColor: "#cde8f0",
   },
+
+  /* Top overlay bar */
   topBar: {
     position: "absolute",
-    top: 52,
+    top: 48,
     left: 0,
     right: 0,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 28,
-    zIndex: 10,
+    alignItems: "center",
+    paddingHorizontal: 24,
+    zIndex: 20,
   },
   appName: {
     fontSize: 22,
     fontWeight: "800",
-    letterSpacing: 0.5,
-  },
-  skipBtn: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    letterSpacing: 0.4,
+    textShadowColor: "rgba(0,0,0,0.25)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   skipText: {
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: "700",
+    color: "#fff",
+    textShadowColor: "rgba(0,0,0,0.25)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
-  flatList: {
-    flex: 1,
-    marginBottom: BOTTOM_HEIGHT,
-  },
-  slide: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  illustrationContainer: {
-    width: width * 0.82,
-    height: height * 0.46,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-  },
-  illustration: {
-    width: "100%",
-    height: "100%",
-  },
+
+  /* Bottom card */
   bottomCard: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: BOTTOM_HEIGHT,
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    height: BOTTOM_H,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     paddingHorizontal: 28,
-    paddingTop: 28,
-    paddingBottom: 36,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 12,
+    paddingTop: 24,
+    paddingBottom: 32,
     justifyContent: "space-between",
+    // lift it over the FlatList
+    marginTop: -30,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "800",
     textAlign: "center",
-    lineHeight: 32,
-    marginBottom: 10,
+    lineHeight: 34,
   },
   subtitle: {
     fontSize: 14,
-    color: "#6b7280",
+    color: "#4b5563",
     textAlign: "center",
     lineHeight: 22,
-    paddingHorizontal: 8,
   },
   dotsRow: {
     flexDirection: "row",
@@ -271,14 +252,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btnText: {
-    color: "white",
+    color: "#fff",
     fontSize: 16,
     fontWeight: "700",
     letterSpacing: 0.3,
   },
 });
 
-// Helper to check if onboarding is needed
 export async function shouldShowOnboarding() {
   const done = await AsyncStorage.getItem(ONBOARDING_KEY);
   return !done;
