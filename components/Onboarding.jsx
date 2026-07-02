@@ -12,36 +12,36 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
-const ONBOARDING_KEY = "sheherly_onboarding_done";
 
-// Each slide's bg color is sampled from the actual image background
+// ── Version-based onboarding: bump APP_VERSION to force re-show after updates ──
+const APP_VERSION = "1.0.1";
+const ONBOARDING_VERSION_KEY = "sheherly_onboarding_version";
+const ONBOARDING_OLD_KEY = "sheherly_onboarding_done"; // legacy key — cleared on first run
+
 const slides = [
   {
     id: "1",
     image: require("../assets/images/intro1.png"),
     title: "Explore Jaipur\nLike a Local",
-    subtitle:
-      "Discover the best food, stays, transport,\nand hidden gems — all in one app.",
+    subtitle: "Discover the best food, stays, transport,\nand hidden gems — all in one app.",
     accent: "#085a73",
-    bg: "#cde8f0",       // matches intro1 blue-teal background
+    bg: "#cde8f0",
   },
   {
     id: "2",
     image: require("../assets/images/intro2.png"),
     title: "PG? Flat? Hostel?\nI got you homie!",
-    subtitle:
-      "Find the perfect accommodation — from\nbudget hostels to cozy flats — near you.",
+    subtitle: "Find the perfect accommodation — from\nbudget hostels to cozy flats — near you.",
     accent: "#218fb4",
-    bg: "#c9e8ef",       // matches intro2 light blue-green background
+    bg: "#c9e8ef",
   },
   {
     id: "3",
     image: require("../assets/images/intro3.png"),
     title: "Your AI Guide\nto the City",
-    subtitle:
-      "Ask our chatbot anything about Jaipur —\nroutes, timings, tips and more.",
+    subtitle: "Ask our chatbot anything about Jaipur —\nroutes, timings, tips and more.",
     accent: "#085a73",
-    bg: "#cde8f0",       // matches intro3 background
+    bg: "#cde8f0",
   },
 ];
 
@@ -56,7 +56,9 @@ export default function Onboarding({ onDone }) {
   const slide = slides[current];
 
   const finish = async () => {
-    await AsyncStorage.setItem(ONBOARDING_KEY, "true");
+    // Mark this version as seen — clears any legacy flag too
+    await AsyncStorage.setItem(ONBOARDING_VERSION_KEY, APP_VERSION);
+    await AsyncStorage.removeItem(ONBOARDING_OLD_KEY);
     onDone?.();
   };
 
@@ -94,7 +96,7 @@ export default function Onboarding({ onDone }) {
     <View style={styles.root}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      {/* ── Full-screen image pager ── */}
+      {/* Full-width swipeable image pager */}
       <Animated.FlatList
         ref={flatListRef}
         data={slides}
@@ -118,27 +120,28 @@ export default function Onboarding({ onDone }) {
         })}
       />
 
-      {/* ── Top bar overlay (on top of image) ── */}
+      {/* Top bar floats over image */}
       <View style={styles.topBar}>
-        <Text style={[styles.appName, { color: "#fff" }]}>Sheherly</Text>
+        <Text style={styles.appName}>Sheherly</Text>
         {current < slides.length - 1 && (
-          <TouchableOpacity onPress={finish} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <TouchableOpacity
+            onPress={finish}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      {/* ── Bottom card — bg matches current slide ── */}
+      {/* Bottom card — same bg as current slide so no harsh edge */}
       <View style={[styles.bottomCard, { backgroundColor: slide.bg }]}>
-        {/* Title */}
         <Text style={[styles.title, { color: slide.accent }]}>{slide.title}</Text>
 
-        {/* Subtitle */}
         <Text style={styles.subtitle}>{slide.subtitle}</Text>
 
-        {/* Dots */}
+        {/* Animated dots */}
         <View style={styles.dotsRow}>
-          {slides.map((s, i) => {
+          {slides.map((_, i) => {
             const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
             const dotWidth = scrollX.interpolate({
               inputRange,
@@ -162,7 +165,7 @@ export default function Onboarding({ onDone }) {
           })}
         </View>
 
-        {/* Button */}
+        {/* CTA button */}
         <TouchableOpacity
           onPress={goNext}
           style={[styles.btn, { backgroundColor: slide.accent }]}
@@ -182,8 +185,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#cde8f0",
   },
-
-  /* Top overlay bar */
   topBar: {
     position: "absolute",
     top: 48,
@@ -198,8 +199,9 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 22,
     fontWeight: "800",
+    color: "#fff",
     letterSpacing: 0.4,
-    textShadowColor: "rgba(0,0,0,0.25)",
+    textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
@@ -207,22 +209,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#fff",
-    textShadowColor: "rgba(0,0,0,0.25)",
+    textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
-
-  /* Bottom card */
   bottomCard: {
     height: BOTTOM_H,
+    marginTop: -30,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingHorizontal: 28,
     paddingTop: 24,
     paddingBottom: 32,
     justifyContent: "space-between",
-    // lift it over the FlatList
-    marginTop: -30,
   },
   title: {
     fontSize: 26,
@@ -259,7 +258,12 @@ const styles = StyleSheet.create({
   },
 });
 
+// ── Called from index.jsx before showing app ──
 export async function shouldShowOnboarding() {
-  const done = await AsyncStorage.getItem(ONBOARDING_KEY);
-  return !done;
+  const stored = await AsyncStorage.getItem(ONBOARDING_VERSION_KEY);
+  // Also wipe the old legacy key if still present
+  if (stored === null) {
+    await AsyncStorage.removeItem(ONBOARDING_OLD_KEY);
+  }
+  return stored !== APP_VERSION;
 }
