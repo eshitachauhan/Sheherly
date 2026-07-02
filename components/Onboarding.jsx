@@ -13,10 +13,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 
-// ── Version-based onboarding: bump APP_VERSION to force re-show after updates ──
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.2";
 const ONBOARDING_VERSION_KEY = "sheherly_onboarding_version";
-const ONBOARDING_OLD_KEY = "sheherly_onboarding_done"; // legacy key — cleared on first run
+const ONBOARDING_OLD_KEY = "sheherly_onboarding_done";
 
 const slides = [
   {
@@ -25,7 +24,6 @@ const slides = [
     title: "Explore Jaipur\nLike a Local",
     subtitle: "Discover the best food, stays, transport,\nand hidden gems — all in one app.",
     accent: "#085a73",
-    bg: "#e8e4dc",   // exact beige/cream from intro1.png
   },
   {
     id: "2",
@@ -33,7 +31,6 @@ const slides = [
     title: "PG? Flat? Hostel?\nI got you homie!",
     subtitle: "Find the perfect accommodation — from\nbudget hostels to cozy flats — near you.",
     accent: "#218fb4",
-    bg: "#cce7ec",   // exact light teal from intro2.png
   },
   {
     id: "3",
@@ -41,12 +38,8 @@ const slides = [
     title: "Your AI Guide\nto the City",
     subtitle: "Ask our chatbot anything about Jaipur —\nroutes, timings, tips and more.",
     accent: "#085a73",
-    bg: "#cce7ec",   // exact light teal from intro3.png
   },
 ];
-
-const BOTTOM_H = height * 0.36;
-const IMAGE_H = height - BOTTOM_H;
 
 export default function Onboarding({ onDone }) {
   const [current, setCurrent] = useState(0);
@@ -56,7 +49,6 @@ export default function Onboarding({ onDone }) {
   const slide = slides[current];
 
   const finish = async () => {
-    // Mark this version as seen — clears any legacy flag too
     await AsyncStorage.setItem(ONBOARDING_VERSION_KEY, APP_VERSION);
     await AsyncStorage.removeItem(ONBOARDING_OLD_KEY);
     onDone?.();
@@ -83,20 +75,18 @@ export default function Onboarding({ onDone }) {
   }).current;
 
   const renderItem = ({ item }) => (
-    <View style={{ width, height: IMAGE_H, backgroundColor: item.bg }}>
-      <Image
-        source={item.image}
-        style={{ width, height: IMAGE_H }}
-        resizeMode="cover"
-      />
-    </View>
+    <Image
+      source={item.image}
+      style={{ width, height }}
+      resizeMode="cover"
+    />
   );
 
   return (
     <View style={styles.root}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      {/* Full-width swipeable image pager */}
+      {/* Full screen image pager */}
       <Animated.FlatList
         ref={flatListRef}
         data={slides}
@@ -112,7 +102,7 @@ export default function Onboarding({ onDone }) {
         )}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        style={{ height: IMAGE_H }}
+        style={StyleSheet.absoluteFill}
         getItemLayout={(_, index) => ({
           length: width,
           offset: width * index,
@@ -120,7 +110,7 @@ export default function Onboarding({ onDone }) {
         })}
       />
 
-      {/* Top bar floats over image */}
+      {/* Top bar */}
       <View style={styles.topBar}>
         <Text style={styles.appName}>Sheherly</Text>
         {current < slides.length - 1 && (
@@ -133,13 +123,12 @@ export default function Onboarding({ onDone }) {
         )}
       </View>
 
-      {/* Bottom card — same bg as current slide so no harsh edge */}
-      <View style={[styles.bottomCard, { backgroundColor: slide.bg }]}>
+      {/* Bottom overlay — NO background color, text + button float on image */}
+      <View style={styles.bottom}>
         <Text style={[styles.title, { color: slide.accent }]}>{slide.title}</Text>
-
         <Text style={styles.subtitle}>{slide.subtitle}</Text>
 
-        {/* Animated dots */}
+        {/* Dots */}
         <View style={styles.dotsRow}>
           {slides.map((_, i) => {
             const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
@@ -165,7 +154,7 @@ export default function Onboarding({ onDone }) {
           })}
         </View>
 
-        {/* CTA button */}
+        {/* Button */}
         <TouchableOpacity
           onPress={goNext}
           style={[styles.btn, { backgroundColor: slide.accent }]}
@@ -183,7 +172,7 @@ export default function Onboarding({ onDone }) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#e8e4dc",
+    backgroundColor: "#000",
   },
   topBar: {
     position: "absolute",
@@ -201,7 +190,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#fff",
     letterSpacing: 0.4,
-    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowColor: "rgba(0,0,0,0.35)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
@@ -209,19 +198,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#fff",
-    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowColor: "rgba(0,0,0,0.35)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
-  bottomCard: {
-    height: BOTTOM_H,
-    marginTop: 0,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
+
+  /* Bottom section — transparent, floats over image */
+  bottom: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingHorizontal: 28,
-    paddingTop: 24,
-    paddingBottom: 32,
-    justifyContent: "space-between",
+    paddingBottom: 40,
+    paddingTop: 20,
+    gap: 14,
   },
   title: {
     fontSize: 26,
@@ -231,7 +222,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: "#4b5563",
+    color: "#374151",
     textAlign: "center",
     lineHeight: 22,
   },
@@ -258,10 +249,8 @@ const styles = StyleSheet.create({
   },
 });
 
-// ── Called from index.jsx before showing app ──
 export async function shouldShowOnboarding() {
   const stored = await AsyncStorage.getItem(ONBOARDING_VERSION_KEY);
-  // Also wipe the old legacy key if still present
   if (stored === null) {
     await AsyncStorage.removeItem(ONBOARDING_OLD_KEY);
   }
